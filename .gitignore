@@ -13,8 +13,10 @@ next-env.d.ts
 
 # env files (never commit secrets)
 .env
+.env.*
 .env.local
 .env*.local
+!.env.example
 
 # misc
 .DS_Store
@@ -24,3 +26,6 @@ yarn-debug.log*
 yarn-error.log*
 .vercel
 *.tsbuildinfo
+
+# supabase sql (local schema/migrations)
+supabase/*.sql
