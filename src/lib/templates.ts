@@ -38,7 +38,7 @@ export type Template = {
 export const TEMPLATES: Record<TemplateId, Template> = {
   coffee: {
     id: "coffee",
-    label: "Kaffe",
+    label: "Fika",
     icon: "Coffee",
     mood: "",
     tagline: "",

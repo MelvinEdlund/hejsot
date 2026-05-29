@@ -494,7 +494,12 @@ export function CreateInviteForm({
   const [quizDraft, setQuizDraft] = useState("");
   const [quizOptDraft, setQuizOptDraft] = useState("");
   const [editingQuizIdx, setEditingQuizIdx] = useState<number | null>(null);
-  const [gifs, setGifs] = useState<{ url: string; caption: string }[]>([]);
+  const [gifs, setGifs] = useState<{ url: string; caption: string }[]>(() =>
+    GIF_TEMPLATES.slice(0, 4).map((tpl) => ({
+      url: tpl.url,
+      caption: tpl.label,
+    })),
+  );
 
   // form state
   const [submitting, setSubmitting] = useState(false);
@@ -1008,13 +1013,13 @@ export function CreateInviteForm({
                     <SectionCard
                       icon={Clapperboard}
                       title="gifs &amp; bilder"
-                      subtitle="välj en mall-gif eller klistra in egen länk — en gif per slide."
+                      subtitle="mall-gifs är förvalda, men du kan alltid klistra in egen länk — en gif per slide."
                       badge="nytt"
                     >
                       {/* Mall-GIFs — klickbara förslag */}
                       <div className="mb-4">
                         <p className="mb-2 text-[11px] uppercase tracking-wider text-muted/60">
-                          mall-gifs — klicka för att använda
+                          mall-gifs — klicka för att byta
                         </p>
                         <div className="grid grid-cols-5 gap-1.5">
                           {GIF_TEMPLATES.map((tpl) => {
@@ -1087,7 +1092,7 @@ export function CreateInviteForm({
                       <div className="mb-3 flex items-center gap-2">
                         <div className="h-px flex-1 bg-border/15" />
                         <span className="text-[11px] text-muted/50">
-                          eller klistra in egen länk
+                          eller klistra in egen länk (valfritt)
                         </span>
                         <div className="h-px flex-1 bg-border/15" />
                       </div>
@@ -1127,8 +1132,9 @@ export function CreateInviteForm({
                                         .filter((x, i) => i < idx || x.url),
                                     )
                                   }
-                                  className="text-muted/40 hover:text-fg transition-colors"
+                                  className="inline-flex items-center gap-1 text-[11px] uppercase tracking-wider text-muted/60 transition-colors hover:text-fg"
                                 >
+                                  byt till egen
                                   <X className="h-3.5 w-3.5" />
                                 </button>
                               )}
