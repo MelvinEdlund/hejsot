@@ -21,7 +21,11 @@ import {
   Heart,
   ChevronRight,
   Clapperboard,
+  Upload,
+  Link as LinkIcon,
+  Loader2,
 } from "lucide-react";
+import { supabaseBrowser } from "@/lib/supabase/client";
 import { TEMPLATE_LIST, TEMPLATES, type TemplateId } from "@/lib/templates";
 import { createInvitation } from "@/actions/invitations";
 import { STICKER_PACK_CHOICES } from "@/components/invite/Decorations";
@@ -501,6 +505,8 @@ export function CreateInviteForm({
       caption: tpl.label,
     })),
   );
+  const [gifModes, setGifModes] = useState<Array<"upload" | "url">>(["url", "url", "url", "url"]);
+  const [gifUploading, setGifUploading] = useState([false, false, false, false]);
 
   // form state
   const [submitting, setSubmitting] = useState(false);
@@ -573,6 +579,31 @@ export function CreateInviteForm({
   function removeQuizQuestion(idx: number) {
     setQuiz(quiz.filter((_, i) => i !== idx));
     if (editingQuizIdx === idx) setEditingQuizIdx(null);
+  }
+
+  async function uploadGif(idx: number, file: File) {
+    if (!file.type.startsWith("image/")) return;
+    if (file.size > 10 * 1024 * 1024) return;
+    const sb = supabaseBrowser();
+    if (!sb) return;
+    setGifUploading((prev) => prev.map((v, i) => (i === idx ? true : v)));
+    const ext = (file.name.split(".").pop() ?? "gif").toLowerCase();
+    const key = `${crypto.randomUUID()}.${ext}`;
+    const { error: upErr } = await sb.storage
+      .from("hero-images")
+      .upload(key, file, { upsert: false, contentType: file.type });
+    if (upErr) {
+      setGifUploading((prev) => prev.map((v, i) => (i === idx ? false : v)));
+      return;
+    }
+    const { data } = sb.storage.from("hero-images").getPublicUrl(key);
+    setGifUploading((prev) => prev.map((v, i) => (i === idx ? false : v)));
+    setGifs((prev) => {
+      const next = [...prev];
+      while (next.length <= idx) next.push({ url: "", caption: "" });
+      next[idx] = { ...next[idx], url: data.publicUrl };
+      return next;
+    });
   }
 
   function goNext() {
@@ -1180,24 +1211,92 @@ export function CreateInviteForm({
                                 />
                               </div>
                             ) : (
-                              <input
-                                type="url"
-                                value={g.url}
-                                onChange={(e) =>
-                                  setGifs((prev) => {
-                                    const next = [...prev];
-                                    while (next.length <= idx)
-                                      next.push({ url: "", caption: "" });
-                                    next[idx] = {
-                                      ...next[idx],
-                                      url: e.target.value,
-                                    };
-                                    return next;
-                                  })
-                                }
-                                placeholder="https://media.giphy.com/…"
-                                className="w-full rounded-xl border border-border/15 bg-surface/60 px-3 py-2.5 text-[14px] text-fg placeholder:text-muted/50 focus:border-accent/60 focus:outline-none focus:ring-2 focus:ring-accent/10 transition-all"
-                              />
+                              <div className="space-y-2">
+                                {/* Mode toggle */}
+                                <div className="flex rounded-xl border border-border/15 bg-surface/40 p-1 gap-1">
+                                  <button
+                                    type="button"
+                                    onClick={() =>
+                                      setGifModes((prev) =>
+                                        prev.map((m, i) => (i === idx ? "upload" : m)),
+                                      )
+                                    }
+                                    className={[
+                                      "flex flex-1 items-center justify-center gap-1.5 rounded-lg px-3 py-1.5 text-[12px] font-medium transition-all",
+                                      gifModes[idx] === "upload"
+                                        ? "bg-surface shadow-sm text-fg"
+                                        : "text-muted hover:text-fg",
+                                    ].join(" ")}
+                                  >
+                                    <Upload className="h-3 w-3" />
+                                    bifoga
+                                  </button>
+                                  <button
+                                    type="button"
+                                    onClick={() =>
+                                      setGifModes((prev) =>
+                                        prev.map((m, i) => (i === idx ? "url" : m)),
+                                      )
+                                    }
+                                    className={[
+                                      "flex flex-1 items-center justify-center gap-1.5 rounded-lg px-3 py-1.5 text-[12px] font-medium transition-all",
+                                      gifModes[idx] === "url"
+                                        ? "bg-surface shadow-sm text-fg"
+                                        : "text-muted hover:text-fg",
+                                    ].join(" ")}
+                                  >
+                                    <LinkIcon className="h-3 w-3" />
+                                    länk
+                                  </button>
+                                </div>
+
+                                {gifModes[idx] === "upload" ? (
+                                  <label
+                                    className="flex cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-border/20 bg-surface/40 px-4 py-5 text-center transition-colors hover:border-border/40 hover:bg-surface/60"
+                                  >
+                                    <input
+                                      type="file"
+                                      accept="image/*"
+                                      className="sr-only"
+                                      onChange={(e) => {
+                                        const f = e.target.files?.[0];
+                                        if (f) void uploadGif(idx, f);
+                                        e.target.value = "";
+                                      }}
+                                    />
+                                    {gifUploading[idx] ? (
+                                      <Loader2 className="h-4 w-4 animate-spin text-muted" />
+                                    ) : (
+                                      <Upload className="h-4 w-4 text-muted" />
+                                    )}
+                                    <span className="text-[13px] text-fg">
+                                      {gifUploading[idx] ? "laddar upp..." : "klicka eller dra hit"}
+                                    </span>
+                                    <span className="text-[11px] text-muted/60">
+                                      jpg, png, gif · max 10 mb
+                                    </span>
+                                  </label>
+                                ) : (
+                                  <input
+                                    type="url"
+                                    value={g.url}
+                                    onChange={(e) =>
+                                      setGifs((prev) => {
+                                        const next = [...prev];
+                                        while (next.length <= idx)
+                                          next.push({ url: "", caption: "" });
+                                        next[idx] = {
+                                          ...next[idx],
+                                          url: e.target.value,
+                                        };
+                                        return next;
+                                      })
+                                    }
+                                    placeholder="https://media.giphy.com/…"
+                                    className="w-full rounded-xl border border-border/15 bg-surface/60 px-3 py-2.5 text-[14px] text-fg placeholder:text-muted/50 focus:border-accent/60 focus:outline-none focus:ring-2 focus:ring-accent/10 transition-all"
+                                  />
+                                )}
+                              </div>
                             )}
                           </div>
                         );

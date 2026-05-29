@@ -1,16 +1,14 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { Camera, Loader2, X, Image as ImgIcon } from "lucide-react";
+import { Camera, Loader2, X, Image as ImgIcon, Link, Upload } from "lucide-react";
 import { supabaseBrowser } from "@/lib/supabase/client";
 
+type InputMode = "upload" | "url";
+
 /**
- * Drag-and-drop foto-uppladdning rakt till Supabase Storage-bucketen
- * `hero-images`. Anon-policyn tillåter insert dit, så det fungerar utan att
- * vi behöver en server action. Returnerar publika URL:en när det är klart.
- *
- * Tanken: "lägg in en bild på dig själv, hennes katt, eller vad du vill" — så
- * inbjudningen känns hemmagjord och personlig.
+ * Drag-and-drop foto-uppladdning eller URL-länk.
+ * Returnerar publika URL:en när det är klart.
  */
 export function PhotoUpload({
   value,
@@ -27,6 +25,8 @@ export function PhotoUpload({
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [dragging, setDragging] = useState(false);
+  const [mode, setMode] = useState<InputMode>("upload");
+  const [urlDraft, setUrlDraft] = useState("");
 
   async function upload(file: File) {
     setError(null);
@@ -72,6 +72,13 @@ export function PhotoUpload({
     if (f) void upload(f);
   }
 
+  function commitUrl() {
+    const url = urlDraft.trim();
+    if (!url) return;
+    onChange(url);
+    setUrlDraft("");
+  }
+
   return (
     <div className="space-y-3">
       <div className="flex items-baseline justify-between">
@@ -84,39 +91,97 @@ export function PhotoUpload({
       </div>
 
       {!value ? (
-        <label
-          onDragOver={(e) => {
-            e.preventDefault();
-            setDragging(true);
-          }}
-          onDragLeave={() => setDragging(false)}
-          onDrop={onDrop}
-          className={
-            "flex cursor-pointer flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed px-6 py-8 text-center transition-colors " +
-            (dragging
-              ? "border-accent bg-accent/5"
-              : "border-border/20 bg-surface/40 hover:border-border/40 hover:bg-surface/60")
-          }
-        >
-          <input
-            ref={inputRef}
-            type="file"
-            accept="image/*"
-            onChange={onPick}
-            className="sr-only"
-          />
-          {uploading ? (
-            <Loader2 className="h-5 w-5 animate-spin text-muted" />
+        <>
+          {/* Mode toggle */}
+          <div className="flex rounded-xl border border-border/15 bg-surface/40 p-1 gap-1">
+            <button
+              type="button"
+              onClick={() => setMode("upload")}
+              className={[
+                "flex flex-1 items-center justify-center gap-1.5 rounded-lg px-3 py-1.5 text-[13px] font-medium transition-all",
+                mode === "upload"
+                  ? "bg-surface shadow-sm text-fg"
+                  : "text-muted hover:text-fg",
+              ].join(" ")}
+            >
+              <Upload className="h-3.5 w-3.5" />
+              bifoga
+            </button>
+            <button
+              type="button"
+              onClick={() => setMode("url")}
+              className={[
+                "flex flex-1 items-center justify-center gap-1.5 rounded-lg px-3 py-1.5 text-[13px] font-medium transition-all",
+                mode === "url"
+                  ? "bg-surface shadow-sm text-fg"
+                  : "text-muted hover:text-fg",
+              ].join(" ")}
+            >
+              <Link className="h-3.5 w-3.5" />
+              länk
+            </button>
+          </div>
+
+          {mode === "upload" ? (
+            <label
+              onDragOver={(e) => {
+                e.preventDefault();
+                setDragging(true);
+              }}
+              onDragLeave={() => setDragging(false)}
+              onDrop={onDrop}
+              className={
+                "flex cursor-pointer flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed px-6 py-8 text-center transition-colors " +
+                (dragging
+                  ? "border-accent bg-accent/5"
+                  : "border-border/20 bg-surface/40 hover:border-border/40 hover:bg-surface/60")
+              }
+            >
+              <input
+                ref={inputRef}
+                type="file"
+                accept="image/*"
+                onChange={onPick}
+                className="sr-only"
+              />
+              {uploading ? (
+                <Loader2 className="h-5 w-5 animate-spin text-muted" />
+              ) : (
+                <Camera className="h-5 w-5 text-muted" />
+              )}
+              <div className="text-[14px] text-fg">
+                {uploading ? "laddar upp..." : "klicka eller dra hit en bild"}
+              </div>
+              <div className="text-[12px] text-muted/70">
+                jpg, png, gif · max 5 mb
+              </div>
+            </label>
           ) : (
-            <Camera className="h-5 w-5 text-muted" />
+            <div className="flex gap-2">
+              <input
+                type="url"
+                value={urlDraft}
+                onChange={(e) => setUrlDraft(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    commitUrl();
+                  }
+                }}
+                placeholder="https://..."
+                className="flex-1 rounded-xl border border-border/15 bg-surface/60 px-3 py-2.5 text-[14px] text-fg placeholder:text-muted/50 focus:border-accent/60 focus:outline-none focus:ring-2 focus:ring-accent/10 transition-all"
+              />
+              <button
+                type="button"
+                onClick={commitUrl}
+                disabled={!urlDraft.trim()}
+                className="inline-flex h-11 items-center gap-1.5 rounded-full border border-border/15 bg-surface/60 px-4 text-[13px] text-fg transition-all hover:border-accent/40 hover:bg-accent/10 disabled:opacity-40"
+              >
+                lägg till
+              </button>
+            </div>
           )}
-          <div className="text-[14px] text-fg">
-            {uploading ? "laddar upp..." : "klicka eller dra hit en bild"}
-          </div>
-          <div className="text-[12px] text-muted/70">
-            jpg, png, gif · max 5 mb
-          </div>
-        </label>
+        </>
       ) : (
         <div className="relative overflow-hidden rounded-2xl border border-border/15 bg-surface/40 p-3">
           <div className="flex items-start gap-3">
@@ -128,7 +193,7 @@ export function PhotoUpload({
             />
             <div className="min-w-0 flex-1">
               <div className="flex items-center gap-1.5 text-[13px] text-muted">
-                <ImgIcon className="h-3.5 w-3.5" /> bild uppladdad
+                <ImgIcon className="h-3.5 w-3.5" /> bild vald
               </div>
               <input
                 value={caption}
