@@ -15,7 +15,7 @@ export default async function NewInvitePage() {
           Ny inbjudan
         </h1>
         <p className="mt-1 text-[14px] text-muted">
-          Välj en stämning, gör den personlig, dela länken.
+          Välj en date, gör den personlig, dela länken.
         </p>
         <div className="mt-8">
           <CreateInviteForm />

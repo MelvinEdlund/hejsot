@@ -139,7 +139,7 @@ export function InvitePreview({
           <div className="mt-3 flex items-center gap-2 rounded-xl border border-border/10 bg-surface/50 px-3 py-2">
             <Music className="h-3.5 w-3.5 text-accent/60" />
             <span className="text-[11px] italic text-muted">
-              {extras.musicLabel || "musikvibe"} →
+              {extras.musicLabel || "musik"} →
             </span>
           </div>
         )}

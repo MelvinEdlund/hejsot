@@ -92,7 +92,7 @@ const ease: [number, number, number, number] = [0.22, 1, 0.36, 1];
 
 // ── Step labels ────────────────────────────────────────────────────
 const STEP_META = [
-  { label: "stämning", emoji: "✦" },
+  { label: "date", emoji: "✦" },
   { label: "innehåll", emoji: "♡" },
   { label: "extra", emoji: "✨" },
   { label: "detaljer", emoji: "🔒" },
@@ -723,12 +723,12 @@ export function CreateInviteForm({
                 transition={{ duration: 0.38, ease }}
                 className="space-y-6"
               >
-                {/* ═══ STEP 0 – Stämning ═══════════════════════════════════ */}
+                {/* ═══ STEP 0 – Date ═══════════════════════════════════ */}
                 {step === 0 && (
                   <>
                     <div>
                       <div className="mb-1 text-[13px] font-medium uppercase tracking-[0.12em] text-muted/70">
-                        välj stämning
+                        välj date
                       </div>
                       <p className="text-[13px] text-muted"></p>
                     </div>
@@ -912,7 +912,7 @@ export function CreateInviteForm({
                     {/* Musik */}
                     <SectionCard
                       icon={Music}
-                      title="musikvibe"
+                      title="musik"
                       subtitle="klistra in en Spotify-länk — autoplay när hon öppnar."
                     >
                       <input
@@ -938,7 +938,7 @@ export function CreateInviteForm({
                             </span>
                             <div>
                               <div className="text-[12px] font-medium text-fg">
-                                {musicLabel || "musikvibe"}
+                                {musicLabel || "musik"}
                               </div>
                               <div className="text-[11px] text-muted">
                                 spelar automatiskt när länken öppnas

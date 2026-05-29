@@ -94,7 +94,7 @@ export function SpotifyPlayer({
           ♫
         </span>
         <div className="min-w-0 flex-1">
-          <div className="truncate text-[14px] font-medium text-fg">{label || "musikvibe"}</div>
+          <div className="truncate text-[14px] font-medium text-fg">{label || "musik"}</div>
           <div className="text-[12px] text-muted">tryck för att lyssna</div>
         </div>
         <ExternalLink className="h-4 w-4 shrink-0 text-muted/60 transition-colors group-hover:text-fg" />
