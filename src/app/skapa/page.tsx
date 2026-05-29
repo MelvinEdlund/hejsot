@@ -7,8 +7,7 @@ export const dynamic = "force-dynamic";
 
 export const metadata = {
   title: "Skapa en inbjudan",
-  description:
-    "Bygg en personlig dejtinbjudan på under en minut. Inget konto, ingen inloggning — bara du, hon och en länk.",
+  description: "",
 };
 
 export default function PublicCreatePage() {
