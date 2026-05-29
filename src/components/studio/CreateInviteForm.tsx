@@ -685,9 +685,7 @@ export function CreateInviteForm({
           animate={{ opacity: 1 }}
           transition={{ delay: 0.12, duration: 0.5 }}
           className="mt-3 text-[15px] text-muted"
-        >
-          fyra enkla steg. sedan en länk.
-        </motion.p>
+        ></motion.p>
       </div>
 
       <form
@@ -803,9 +801,7 @@ export function CreateInviteForm({
                       <div className="mb-1 text-[13px] font-medium uppercase tracking-[0.12em] text-muted/70">
                         till & från
                       </div>
-                      <p className="text-[13px] text-muted">
-                        vem är det till? skriv som du brukar.
-                      </p>
+                      <p className="text-[13px] text-muted">vem är det till?</p>
                     </div>
 
                     <div className="grid gap-4 sm:grid-cols-2">
