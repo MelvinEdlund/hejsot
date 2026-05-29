@@ -169,7 +169,7 @@ Limitern växlar automatiskt — ingen koduppdatering krävs.
 Resend sköter både utveckling och produktion utan ändringar:
 
 - **Utan API-nyckel**: `sendResponseNotification` loggar svaret i serverkonsolen istället för att maila. Bra under utveckling.
-- **Med API-nyckel**: Sätt `RESEND_API_KEY` + `RESEND_FROM_EMAIL`. I produktion behöver du verifiera din domän hos Resend (Domains → Add Domain → följ DNS-instruktionerna) för att maila från `hej@dindomän.se`. Innan dess kan du använda `onboarding@resend.dev` för tester.
+- **Med API-nyckel**: Sätt `RESEND_API_KEY` + `RESEND_FROM_EMAIL`. I produktion behöver du verifiera din domän hos Resend (Domains → Add Domain → följ DNS-instruktionerna) för att maila från `svar@hejsot.lol`. Innan dess kan du använda `onboarding@resend.dev` för tester.
 
 ---
 

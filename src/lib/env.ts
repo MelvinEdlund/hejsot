@@ -38,7 +38,7 @@ const serverSchema = z.object({
   ADMIN_PASSWORD: z.string().min(8),
   AUTH_SECRET: z.string().min(32, "AUTH_SECRET must be at least 32 characters"),
   RESEND_API_KEY: z.string().optional().default(""),
-  RESEND_FROM_EMAIL: z.string().default("hejsöt <onboarding@resend.dev>"),
+  RESEND_FROM_EMAIL: z.string().default("hejsot <svar@hejsot.lol>"),
   UPSTASH_REDIS_REST_URL: z.string().optional().default(""),
   UPSTASH_REDIS_REST_TOKEN: z.string().optional().default(""),
 });
