@@ -505,8 +505,18 @@ export function CreateInviteForm({
       caption: tpl.label,
     })),
   );
-  const [gifModes, setGifModes] = useState<Array<"upload" | "url">>(["url", "url", "url", "url"]);
-  const [gifUploading, setGifUploading] = useState([false, false, false, false]);
+  const [gifModes, setGifModes] = useState<Array<"upload" | "url">>([
+    "url",
+    "url",
+    "url",
+    "url",
+  ]);
+  const [gifUploading, setGifUploading] = useState([
+    false,
+    false,
+    false,
+    false,
+  ]);
 
   // form state
   const [submitting, setSubmitting] = useState(false);
@@ -1218,7 +1228,9 @@ export function CreateInviteForm({
                                     type="button"
                                     onClick={() =>
                                       setGifModes((prev) =>
-                                        prev.map((m, i) => (i === idx ? "upload" : m)),
+                                        prev.map((m, i) =>
+                                          i === idx ? "upload" : m,
+                                        ),
                                       )
                                     }
                                     className={[
@@ -1235,7 +1247,9 @@ export function CreateInviteForm({
                                     type="button"
                                     onClick={() =>
                                       setGifModes((prev) =>
-                                        prev.map((m, i) => (i === idx ? "url" : m)),
+                                        prev.map((m, i) =>
+                                          i === idx ? "url" : m,
+                                        ),
                                       )
                                     }
                                     className={[
@@ -1251,9 +1265,7 @@ export function CreateInviteForm({
                                 </div>
 
                                 {gifModes[idx] === "upload" ? (
-                                  <label
-                                    className="flex cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-border/20 bg-surface/40 px-4 py-5 text-center transition-colors hover:border-border/40 hover:bg-surface/60"
-                                  >
+                                  <label className="flex cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-border/20 bg-surface/40 px-4 py-5 text-center transition-colors hover:border-border/40 hover:bg-surface/60">
                                     <input
                                       type="file"
                                       accept="image/*"
@@ -1270,7 +1282,9 @@ export function CreateInviteForm({
                                       <Upload className="h-4 w-4 text-muted" />
                                     )}
                                     <span className="text-[13px] text-fg">
-                                      {gifUploading[idx] ? "laddar upp..." : "klicka eller dra hit"}
+                                      {gifUploading[idx]
+                                        ? "laddar upp..."
+                                        : "klicka eller dra hit"}
                                     </span>
                                     <span className="text-[11px] text-muted/60">
                                       jpg, png, gif · max 10 mb

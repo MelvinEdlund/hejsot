@@ -162,13 +162,13 @@ export function BgThemePreview({ theme, active }: { theme: BgTheme; active: bool
     snow: "❄ ❅ ❆",
   };
   const colors: Record<BgTheme, string> = {
-    none: "from-surface/80 to-surface/40",
-    starfield: "from-[#ece9f7] to-[#ddd6f3] dark:from-[#0d0c17] dark:to-[#1a1030]",
-    bubbles:   "from-[#ead6f7] to-[#d6eaf7] dark:from-[#1a0d2e] dark:to-[#0d1a2e]",
-    aurora:    "from-[#ff7ca1]/20 via-[#b28aff]/20 to-[#7cd4ff]/20",
-    roses:     "from-[#f7d6e6] to-[#f7d6d6] dark:from-[#2e0d1a] dark:to-[#1a0d0d]",
-    heartbeat: "from-[#f7d6e6] to-[#f0d6f7] dark:from-[#2e0d1a] dark:to-[#1a0d20]",
-    snow:      "from-[#d6e8f7] to-[#d6d6f0] dark:from-[#0d1a2e] dark:to-[#0d1020]",
+    none:      "from-surface/80 to-surface/40",
+    starfield: "from-surface/80 to-surface/40",
+    bubbles:   "from-surface/80 to-surface/40",
+    aurora:    "from-surface/80 to-surface/40",
+    roses:     "from-surface/80 to-surface/40",
+    heartbeat: "from-surface/80 to-surface/40",
+    snow:      "from-surface/80 to-surface/40",
   };
 
   const isDarkCard = theme !== "none" && theme !== "aurora";
@@ -191,7 +191,7 @@ export function BgThemePreview({ theme, active }: { theme: BgTheme; active: bool
       <span
         className={[
           "w-full text-center text-[10px] leading-tight",
-          isDarkCard ? "text-fg/60 dark:text-white/70" : "text-fg/70",
+          "text-fg/70",
         ].join(" ")}
       >
         {labels[theme]}
