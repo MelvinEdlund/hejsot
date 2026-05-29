@@ -25,7 +25,16 @@ export function RunawayNo({
   const [given, setGiven] = useState(false);
 
   // Eskalerande etiketter
-  const labels = ["nej", "nej 😶", "nope", "nei nei", "nej!!", "stopp", "INTE", "🏃"];
+  const labels = [
+    "nej",
+    "nej 😶",
+    "nope",
+    "nei nei",
+    "nej!!",
+    "stopp",
+    "INTE",
+    "🏃",
+  ];
   const label = labels[Math.min(dodges, labels.length - 1)];
 
   useEffect(() => {
@@ -63,14 +72,21 @@ export function RunawayNo({
       <motion.button
         type="button"
         onMouseEnter={hop}
+        onMouseDown={hop}
+        onPointerDown={hop}
         onFocus={hop}
         onTouchStart={hop}
         onClick={handleClick}
-        animate={{ x: pos.x, y: pos.y }}
+        animate={{
+          x: pos.x,
+          y: pos.y,
+          rotate: [0, -8, 8, -6, 6, -4, 4, 0],
+        }}
         transition={{
           type: "spring",
           stiffness: Math.min(900, 280 + dodges * 90),
           damping: Math.max(10, 18 - dodges),
+          rotate: { duration: 0.4, ease: "easeOut" },
         }}
         className="rounded-full border border-border/20 bg-surface/40 px-5 py-2.5 text-[14px] text-muted/80 backdrop-blur transition-colors hover:text-fg"
         aria-label="Nej"

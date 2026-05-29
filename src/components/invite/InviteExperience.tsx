@@ -281,16 +281,17 @@ export function InviteExperience({
   const hasQuiz = (extras?.quiz?.length ?? 0) > 0;
 
   // Per-slide GIF list — new gifs[] array takes priority over legacy gifUrl
-  const gifList = extras?.gifs && extras.gifs.length > 0
-    ? extras.gifs
-    : extras?.gifUrl
-      ? [{ url: extras.gifUrl, caption: extras.gifCaption }]
-      : [];
+  const gifList =
+    extras?.gifs && extras.gifs.length > 0
+      ? extras.gifs
+      : extras?.gifUrl
+        ? [{ url: extras.gifUrl, caption: extras.gifCaption }]
+        : [];
   // gifs[0] → sealed slide, gifs[1] → open slide, gifs[2] → respond slide
-  const sealedGif  = extras?.gifs ? gifList[0] : undefined;
-  const openGif    = extras?.gifs ? gifList[1] : gifList[0];  // legacy: keep on open
-  const respondGif = gifList[2];   // "efter svaret" — visas i respond-steget
-  const doneGif    = gifList[3];   // "bonusbild"    — visas på done-skärmen
+  const sealedGif = extras?.gifs ? gifList[0] : undefined;
+  const openGif = extras?.gifs ? gifList[1] : gifList[0]; // legacy: keep on open
+  const respondGif = gifList[2]; // "efter svaret" — visas i respond-steget
+  const doneGif = gifList[3]; // "bonusbild"    — visas på done-skärmen
 
   const [stage, setStage] = useState<Stage>("sealed");
   const [pendingAnswer, setPendingAnswer] = useState<AnswerType>("yes");
@@ -492,8 +493,7 @@ export function InviteExperience({
                 className="mt-3 inline-block rounded-full border border-dashed px-3 py-1 text-[11px] italic text-muted/60"
                 style={{ borderColor: `${t.accent}40` }}
               >
-                gjord med ♡{" "}
-                {fromName ? `av ${fromName.toLowerCase()}` : "med kärlek"}
+                {fromName ? `av ${fromName.toLowerCase()}` : ""}
               </motion.div>
 
               {invitation.heroImageUrl && (
@@ -519,7 +519,11 @@ export function InviteExperience({
                   transition={{ delay: 0.38, duration: 0.65, ease }}
                   className="mt-8 flex justify-center"
                 >
-                  <GifCard src={sealedGif.url} caption={sealedGif.caption} tilt={3} />
+                  <GifCard
+                    src={sealedGif.url}
+                    caption={sealedGif.caption}
+                    tilt={3}
+                  />
                 </motion.div>
               )}
 
@@ -606,8 +610,6 @@ export function InviteExperience({
                   — {invitation.senderName}
                 </motion.p>
               )}
-
-
 
               {/* GIF / bild på slide 2 (open) */}
               {openGif && (
@@ -841,7 +843,11 @@ export function InviteExperience({
                   transition={{ delay: 0.08, duration: 0.55, ease }}
                   className="mt-6 flex justify-center"
                 >
-                  <GifCard src={respondGif.url} caption={respondGif.caption} tilt={-1} />
+                  <GifCard
+                    src={respondGif.url}
+                    caption={respondGif.caption}
+                    tilt={-1}
+                  />
                 </motion.div>
               )}
 
@@ -1070,7 +1076,11 @@ export function InviteExperience({
                   transition={{ delay: 0.7, duration: 0.6, ease }}
                   className="mt-8 flex justify-center"
                 >
-                  <GifCard src={doneGif.url} caption={doneGif.caption} tilt={2} />
+                  <GifCard
+                    src={doneGif.url}
+                    caption={doneGif.caption}
+                    tilt={2}
+                  />
                 </motion.div>
               )}
             </motion.div>
