@@ -866,7 +866,7 @@ export function CreateInviteForm({
                   <>
                     <div>
                       <div className="mb-1 text-[13px] font-medium uppercase tracking-[0.12em] text-muted/70">
-                        extra charm
+                        extra
                       </div>
                       <p className="text-[13px] text-muted"></p>
                     </div>
@@ -876,7 +876,6 @@ export function CreateInviteForm({
                       icon={Palette}
                       title="animerad bakgrund"
                       subtitle="en levande bakgrund bakom inbjudan."
-                      badge="nytt"
                     >
                       <div className="grid grid-cols-4 gap-2 sm:grid-cols-7">
                         {BG_THEMES.map((th) => (
@@ -895,7 +894,6 @@ export function CreateInviteForm({
                       icon={Sparkles}
                       title="skäl att säga ja"
                       subtitle="upp till 5 korta anledningar."
-                      badge="nytt"
                     >
                       <ChipInput
                         values={reasons}
@@ -916,7 +914,6 @@ export function CreateInviteForm({
                       icon={Music}
                       title="musikvibe"
                       subtitle="klistra in en Spotify-länk — autoplay när hon öppnar."
-                      badge="nytt"
                     >
                       <input
                         type="url"
@@ -957,7 +954,6 @@ export function CreateInviteForm({
                       icon={Timer}
                       title="nerräkning"
                       subtitle="live-nerräkning till dejten."
-                      badge="nytt"
                     >
                       <input
                         type="datetime-local"
@@ -988,7 +984,6 @@ export function CreateInviteForm({
                       icon={MessageCircle}
                       title='anpassa "ja"-knappen'
                       subtitle="vad ska stå på den stora knappen?"
-                      badge="nytt"
                     >
                       <input
                         type="text"
@@ -1022,7 +1017,6 @@ export function CreateInviteForm({
                       icon={Clapperboard}
                       title="gifs &amp; bilder"
                       subtitle="mall-gifs är förvalda, men du kan alltid klistra in egen länk — en gif per slide."
-                      badge="nytt"
                     >
                       {/* Mall-GIFs — klickbara förslag */}
                       <div className="mb-4">
@@ -1215,7 +1209,6 @@ export function CreateInviteForm({
                       icon={Gamepad2}
                       title="mini-quiz"
                       subtitle="1–3 frågor. alla svar är rätt."
-                      badge="nytt"
                     >
                       {quiz.map((q, qIdx) => (
                         <div
