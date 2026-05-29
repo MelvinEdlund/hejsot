@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { ArrowLeft, Eye, MessageCircleHeart, Clock } from "lucide-react";
 import { getInvitationDetail } from "@/lib/queries";
 import { getTemplate } from "@/lib/templates";
@@ -8,6 +8,7 @@ import { StudioHeader } from "@/components/studio/StudioHeader";
 import { InviteDetailActions } from "@/components/studio/InviteDetailActions";
 import { TemplateIcon } from "@/components/ui/TemplateIcon";
 import { Badge } from "@/components/ui/Badge";
+import { getSession } from "@/lib/auth/session";
 
 const ANSWER_LABEL: Record<string, { text: string; tone: "positive" | "accent" | "muted" }> = {
   yes: { text: "Ja", tone: "positive" },
@@ -17,6 +18,9 @@ const ANSWER_LABEL: Record<string, { text: string; tone: "positive" | "accent" |
 };
 
 export default async function InviteDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const session = await getSession();
+  if (!session || session.role !== "admin") redirect("/studio/login");
+
   const { id } = await params;
   const detail = await getInvitationDetail(id);
   if (!detail) notFound();
@@ -35,10 +39,10 @@ export default async function InviteDetailPage({ params }: { params: Promise<{ i
       <StudioHeader />
       <main className="mx-auto max-w-3xl px-5 py-8">
         <Link
-          href="/studio"
+          href="/studio/admin"
           className="inline-flex items-center gap-1.5 text-[14px] text-muted transition-colors hover:text-fg"
         >
-          <ArrowLeft className="h-4 w-4" /> Översikt
+          <ArrowLeft className="h-4 w-4" /> Admin-översikt
         </Link>
 
         {/* Header card */}

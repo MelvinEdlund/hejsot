@@ -1,27 +1,31 @@
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Camera, Sparkles, Heart, Lock } from "lucide-react";
 import { SiteHeader } from "@/components/marketing/SiteHeader";
 import { SiteFooter } from "@/components/marketing/SiteFooter";
 import { DemoInvite } from "@/components/marketing/DemoInvite";
 import { TemplateShowcase } from "@/components/marketing/TemplateShowcase";
 import { Button } from "@/components/ui/Button";
-import { Kicker } from "@/components/ui/Badge";
 import { Reveal } from "@/components/ui/Reveal";
 
-const STEPS = [
+const FEATURES = [
   {
-    n: "01",
-    title: "Välj en känsla",
-    body: "Sex stämningar — från ett lugnt kaffe till en middag bara för er två. Eller skriv helt din egen.",
+    icon: Camera,
+    title: "lägg in en gif",
+    body: "ditt ansikte, rolig katt, memes eller vad som helst.",
   },
   {
-    n: "02",
-    title: "Gör den personlig",
-    body: "Hennes namn, dina ord. Vi sköter resten: typografin, tajmingen, känslan när den öppnas.",
+    icon: Sparkles,
+    title: "välj stickers",
+    body: "hjärtan, katter, blommor, glitter — sex paket att välja mellan. flyter omkring i bakgrunden.",
   },
   {
-    n: "03",
-    title: "Dela länken",
-    body: "En länk, gjord för en enda person. När hon svarar landar det direkt hos dig.",
+    icon: Heart,
+    title: "lurig nej-knapp",
+    body: "Nej-knapp som springer iväg när man försöker klicka. bara ja finns kvar.",
+  },
+  {
+    icon: Lock,
+    title: "hemlig rad",
+    body: "ett låst meddelande som dyker upp när man trycker.",
   },
 ];
 
@@ -35,32 +39,33 @@ export default function HomePage() {
         <section className="grid items-center gap-12 pb-10 pt-10 md:grid-cols-[1.05fr_0.95fr] md:pt-20">
           <div>
             <Reveal>
-              <Kicker>En inbjudan, inte ett sms</Kicker>
-            </Reveal>
-            <Reveal delay={0.06}>
-              <h1 className="mt-5 font-display text-[2.6rem] font-medium leading-[1.04] tracking-tightest text-fg sm:text-6xl">
-                En inbjudan <span className="text-gradient italic">värd att öppna</span>.
+              <h1 className="font-display text-[2.6rem] font-medium leading-[1.04] tracking-tightest text-fg sm:text-6xl">
+                bygg din egen
+                <span className="text-gradient italic"> hemsida</span> till
+                dejten.
               </h1>
             </Reveal>
-            <Reveal delay={0.12}>
+            <Reveal delay={0.1}>
               <p className="mt-6 max-w-prose text-lg leading-relaxed text-muted">
-                Skapa en personlig dejtinbjudan, dela en länk, och låt ögonblicket göra
-                jobbet. Inget konto för den du frågar — bara ett ja som känns.
+                lägg in bilder, stickers, favoritlåten. skicka en länk som känns
+                som att <em className="italic">du</em> faktiskt gjort det själv.
               </p>
             </Reveal>
             <Reveal delay={0.18}>
               <div className="mt-9 flex flex-col items-start gap-3 sm:flex-row sm:items-center">
-                <Button href="/studio" size="lg">
-                  Skapa en inbjudan
+                <Button href="/skapa" size="lg">
+                  bygg en hemsida
                   <ArrowRight className="h-[18px] w-[18px]" />
                 </Button>
-                <Button href="#hur" variant="ghost" size="lg">
-                  Hur det funkar
+                <Button href="#funktioner" variant="ghost" size="lg">
+                  se vad som ingår
                 </Button>
               </div>
             </Reveal>
             <Reveal delay={0.24}>
-              <p className="mt-5 text-[13px] text-muted/70">Privat beta · på inbjudan</p>
+              <p className="mt-5 text-[12px] italic text-muted/70">
+                inget konto. bara en länk, en fråga och förhoppningsvis en date.
+              </p>
             </Reveal>
           </div>
 
@@ -69,21 +74,32 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* ── How it works ── */}
-        <section id="hur" className="scroll-mt-24 py-24">
+        {/* ── Features ── */}
+        <section id="funktioner" className="scroll-mt-24 py-20">
           <Reveal>
-            <Kicker>Så funkar det</Kicker>
-            <h2 className="mt-4 max-w-xl font-display text-3xl font-medium leading-tight text-fg sm:text-4xl">
-              Tre steg. Mindre än en minut.
+            <h2 className="max-w-xl font-display text-3xl font-medium leading-tight text-fg sm:text-4xl">
+              Exempel på grejer du kan bygga.
             </h2>
           </Reveal>
-          <div className="mt-12 grid gap-px overflow-hidden rounded-3xl border border-border/10 bg-border/10 sm:grid-cols-3">
-            {STEPS.map((s, i) => (
-              <Reveal key={s.n} delay={i * 0.08} className="h-full">
-                <div className="h-full bg-bg p-7">
-                  <div className="font-display text-sm text-accent">{s.n}</div>
-                  <h3 className="mt-3 font-display text-xl text-fg">{s.title}</h3>
-                  <p className="mt-2 text-[15px] leading-relaxed text-muted">{s.body}</p>
+          <div className="mt-10 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            {FEATURES.map((f, i) => (
+              <Reveal key={f.title} delay={i * 0.06}>
+                <div className="relative h-full overflow-hidden rounded-2xl border border-border/10 bg-surface/50 p-5 transition-colors hover:border-border/25">
+                  <div
+                    aria-hidden
+                    className="absolute -right-6 -top-6 h-20 w-20 rounded-full opacity-30 blur-xl"
+                    style={{
+                      background:
+                        "linear-gradient(135deg, rgb(var(--accent)), rgb(var(--accent-2)))",
+                    }}
+                  />
+                  <f.icon className="relative h-5 w-5 text-fg" />
+                  <div className="relative mt-4 font-display text-lg text-fg">
+                    {f.title}
+                  </div>
+                  <p className="relative mt-1 text-[13px] leading-relaxed text-muted">
+                    {f.body}
+                  </p>
                 </div>
               </Reveal>
             ))}
@@ -91,58 +107,31 @@ export default function HomePage() {
         </section>
 
         {/* ── Template showcase ── */}
-        <section className="py-12">
+        <section id="exempel" className="scroll-mt-24 py-12">
           <Reveal>
-            <Kicker>Stämningar</Kicker>
-            <h2 className="mt-4 max-w-xl font-display text-3xl font-medium leading-tight text-fg sm:text-4xl">
-              En känsla för varje sätt att fråga.
+            <h2 className="max-w-xl font-display text-3xl font-medium leading-tight text-fg sm:text-4xl">
+              sex olika dejtförslag.{" "}
+              <span className="text-muted"> eller skriv din egen.</span>
             </h2>
-            <p className="mt-4 max-w-prose text-[15px] leading-relaxed text-muted">
-              Samma genomtänkta design, sex olika toner. Varje inbjudan får sin egen färg,
-              rytm och röst.
-            </p>
           </Reveal>
           <div className="mt-10">
             <TemplateShowcase />
           </div>
         </section>
 
-        {/* ── The moment ── */}
-        <section className="py-24">
-          <Reveal>
-            <div className="relative overflow-hidden rounded-[2rem] border border-border/10 p-10 sm:p-16">
-              <div
-                aria-hidden
-                className="absolute inset-0 -z-10 opacity-70"
-                style={{
-                  background:
-                    "radial-gradient(70% 90% at 50% 0%, rgba(178,138,255,0.16), transparent 60%), radial-gradient(50% 70% at 100% 100%, rgba(255,124,161,0.14), transparent 60%)",
-                }}
-              />
-              <div className="mx-auto max-w-prose text-center">
-                <h2 className="font-display text-3xl font-medium leading-tight text-fg sm:text-[2.5rem]">
-                  Känslan när hon öppnar den.
-                </h2>
-                <p className="mt-5 text-lg leading-relaxed text-muted">
-                  Inga skämt på hennes bekostnad. Ingen press. Bara en fråga, vackert ställd —
-                  och plats att svara precis som hon vill.
-                </p>
-              </div>
-            </div>
-          </Reveal>
-        </section>
-
         {/* ── Closing CTA ── */}
-        <section className="pb-12 pt-4">
+        <section className="pb-12 pt-10">
           <Reveal>
             <div className="mx-auto max-w-2xl text-center">
               <h2 className="font-display text-4xl font-medium leading-tight text-fg sm:text-5xl">
-                Redo att fråga?
+                redo?
               </h2>
-              <p className="mt-4 text-lg text-muted">Det tar en minut. Resten minns ni längre.</p>
+              <p className="mt-3 text-lg text-muted">
+                det tar en minut. resten är upp till dejten.
+              </p>
               <div className="mt-8 flex justify-center">
-                <Button href="/studio" size="lg">
-                  Skapa en inbjudan
+                <Button href="/skapa" size="lg">
+                  bygg en hemsida ♡
                   <ArrowRight className="h-[18px] w-[18px]" />
                 </Button>
               </div>

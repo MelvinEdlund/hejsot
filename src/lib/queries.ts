@@ -6,6 +6,7 @@ import {
   toPublicInvitation,
   type Invitation,
   type InvitationRow,
+  type InviteExtras,
   type InviteResponse,
   type PublicInvitation,
   type ResponseRow,
@@ -19,7 +20,7 @@ import {
  */
 
 const INVITE_COLUMNS =
-  "id, slug, recipient_name, sender_name, template, headline, message, hero_image_url, ask_timing, status, notify_email, expires_at, created_at, opened_at, open_count";
+  "id, slug, user_id, recipient_name, sender_name, template, headline, message, hero_image_url, ask_timing, playful_no, date_options, sticker_pack, photo_caption, secret_note, extras, status, notify_email, expires_at, created_at, opened_at, open_count";
 
 function isExpired(row: Pick<InvitationRow, "expires_at">): boolean {
   return !!row.expires_at && new Date(row.expires_at).getTime() < Date.now();
@@ -52,6 +53,7 @@ export async function getInvitationBySlug(slug: string): Promise<Invitation | nu
 /** Insert a new invite. Returns the created slug. */
 export async function insertInvitation(values: {
   slug: string;
+  userId: string | null;
   recipientName: string;
   senderName: string | null;
   template: string;
@@ -59,11 +61,18 @@ export async function insertInvitation(values: {
   message: string;
   heroImageUrl: string | null;
   askTiming: boolean;
+  playfulNo: boolean;
+  dateOptions: string[];
+  stickerPack: string;
+  photoCaption: string | null;
+  secretNote: string | null;
+  extras: InviteExtras | null;
   notifyEmail: string | null;
   expiresAt: string | null;
 }): Promise<{ ok: boolean; slug?: string; error?: string }> {
   const { error } = await supabaseAdmin().from("invitations").insert({
     slug: values.slug,
+    user_id: values.userId,
     recipient_name: values.recipientName,
     sender_name: values.senderName,
     template: values.template,
@@ -71,6 +80,12 @@ export async function insertInvitation(values: {
     message: values.message,
     hero_image_url: values.heroImageUrl,
     ask_timing: values.askTiming,
+    playful_no: values.playfulNo,
+    date_options: values.dateOptions,
+    sticker_pack: values.stickerPack,
+    photo_caption: values.photoCaption,
+    secret_note: values.secretNote,
+    extras: values.extras,
     status: "active",
     notify_email: values.notifyEmail,
     expires_at: values.expiresAt,
@@ -94,7 +109,7 @@ export async function insertResponse(values: {
 }): Promise<{ ok: boolean; invitation?: Invitation; error?: string }> {
   const invitation = await getInvitationBySlug(values.slug);
   if (!invitation) return { ok: false, error: "Inbjudan finns inte." };
-  if (invitation.status === "archived") return { ok: false, error: "Inbjudan är inte längre aktiv." };
+  if (invitation.status === "archived") return { ok: false, error: "Inbjudan ar inte langre aktiv." };
 
   const { error } = await supabaseAdmin().from("responses").insert({
     invitation_id: invitation.id,
@@ -150,4 +165,50 @@ export async function setInvitationStatus(id: string, status: InviteStatus): Pro
 export async function deleteInvitation(id: string): Promise<boolean> {
   const { error } = await supabaseAdmin().from("invitations").delete().eq("id", id);
   return !error;
+}
+
+// ── User account queries ─────────────────────────────────────────
+
+export type UserRow = {
+  id: string;
+  email: string;
+  password_hash: string;
+  created_at: string;
+};
+
+export async function createUser(
+  email: string,
+  passwordHash: string,
+): Promise<{ ok: boolean; userId?: string; error?: string }> {
+  const { data, error } = await supabaseAdmin()
+    .from("users")
+    .insert({ email: email.toLowerCase().trim(), password_hash: passwordHash })
+    .select("id")
+    .single();
+  if (error) return { ok: false, error: error.message };
+  return { ok: true, userId: (data as { id: string }).id };
+}
+
+export async function getUserByEmail(email: string): Promise<UserRow | null> {
+  const { data, error } = await supabaseAdmin()
+    .from("users")
+    .select("id, email, password_hash, created_at")
+    .eq("email", email.toLowerCase().trim())
+    .maybeSingle();
+  if (error || !data) return null;
+  return data as UserRow;
+}
+
+/** Personal dashboard: a user's own invites, newest first, with response counts. */
+export async function listUserInvitations(userId: string): Promise<Invitation[]> {
+  const { data, error } = await supabaseAdmin()
+    .from("invitations")
+    .select(`${INVITE_COLUMNS}, responses(count)`)
+    .eq("user_id", userId)
+    .order("created_at", { ascending: false });
+  if (error || !data) return [];
+  return (data as InvitationWithCount[]).map((row) => ({
+    ...rowToInvitation(row),
+    responseCount: row.responses?.[0]?.count ?? 0,
+  }));
 }

@@ -6,13 +6,59 @@ export type InviteStatus = "active" | "archived";
 /** How the recipient replied. */
 export type AnswerType = "yes" | "maybe" | "custom" | "no";
 
-/**
- * Domain model (camelCase) used across the app. Mapped from the snake_case
- * Postgres rows by `rowToInvitation` / `rowToResponse` below.
- */
+/** Which set of doodles floats around in the background. */
+export const STICKER_PACK_IDS = [
+  "mixed",
+  "hearts",
+  "cats",
+  "flowers",
+  "food",
+  "sparkles",
+  "doodle",
+] as const;
+export type StickerPack = (typeof STICKER_PACK_IDS)[number];
+
+// ── Extras (v5) ──────────────────────────────────────────────────
+
+export type BgTheme =
+  | "none"
+  | "starfield"
+  | "bubbles"
+  | "aurora"
+  | "roses"
+  | "heartbeat"
+  | "snow";
+
+export type QuizQuestion = {
+  q: string;     // question text
+  opts: string[]; // 2-4 answer options (no "wrong" answer - all are fun)
+};
+
+export type GifItem = {
+  url: string;
+  caption?: string;
+};
+
+export type InviteExtras = {
+  bgTheme?: BgTheme;
+  reasons?: string[];       // up to 5 "reasons to say yes"
+  countdown?: string;       // ISO datetime string for countdown display
+  musicUrl?: string;        // Spotify / YouTube / Apple Music URL
+  musicLabel?: string;      // e.g. "var lat" - shown under the link
+  yesText?: string;         // custom yes-button label, e.g. "sjalvklart"
+  quiz?: QuizQuestion[];    // 1-3 fun questions shown AFTER open, before respond
+  gifs?: GifItem[];         // up to 4 GIFs/images - shown per slide (slide 0 = sealed, 1 = open, ...)
+  // legacy single-gif fields (backward compat)
+  gifUrl?: string;
+  gifCaption?: string;
+};
+
+// ── Main domain model ────────────────────────────────────────────
+
 export type Invitation = {
   id: string;
   slug: string;
+  userId: string | null;
   recipientName: string;
   senderName: string | null;
   template: TemplateId;
@@ -22,6 +68,10 @@ export type Invitation = {
   askTiming: boolean;
   playfulNo: boolean;
   dateOptions: string[];
+  stickerPack: StickerPack;
+  photoCaption: string | null;
+  secretNote: string | null;
+  extras: InviteExtras | null;
   status: InviteStatus;
   notifyEmail: string | null;
   expiresAt: string | null;
@@ -33,7 +83,7 @@ export type Invitation = {
   latestAnswerType?: AnswerType | null;
 };
 
-/** Public shape sent to the invite page — never includes notifyEmail. */
+/** Public shape sent to the invite page - never includes notifyEmail. */
 export type PublicInvitation = Pick<
   Invitation,
   | "slug"
@@ -46,6 +96,10 @@ export type PublicInvitation = Pick<
   | "askTiming"
   | "playfulNo"
   | "dateOptions"
+  | "stickerPack"
+  | "photoCaption"
+  | "secretNote"
+  | "extras"
 >;
 
 export type InviteResponse = {
@@ -62,6 +116,7 @@ export type InviteResponse = {
 export type InvitationRow = {
   id: string;
   slug: string;
+  user_id: string | null;
   recipient_name: string;
   sender_name: string | null;
   template: string | null;
@@ -71,6 +126,10 @@ export type InvitationRow = {
   ask_timing: boolean | null;
   playful_no: boolean | null;
   date_options: string[] | null;
+  sticker_pack: string | null;
+  photo_caption: string | null;
+  secret_note: string | null;
+  extras: InviteExtras | null;
   status: string | null;
   notify_email: string | null;
   expires_at: string | null;
@@ -84,7 +143,7 @@ export type ResponseRow = {
   invitation_id: string;
   answer_type: string;
   answer: string;
-  chosen_date: string | null; // reused as "timing"
+  chosen_date: string | null;
   note: string | null;
   created_at: string;
 };
@@ -94,6 +153,7 @@ export function rowToInvitation(r: InvitationRow): Invitation {
   return {
     id: r.id,
     slug: r.slug,
+    userId: r.user_id ?? null,
     recipientName: r.recipient_name,
     senderName: r.sender_name,
     template: (r.template ?? "custom") as TemplateId,
@@ -103,6 +163,12 @@ export function rowToInvitation(r: InvitationRow): Invitation {
     askTiming: r.ask_timing ?? true,
     playfulNo: r.playful_no ?? false,
     dateOptions: r.date_options ?? [],
+    stickerPack: ((STICKER_PACK_IDS as readonly string[]).includes(r.sticker_pack ?? "")
+      ? r.sticker_pack
+      : "mixed") as StickerPack,
+    photoCaption: r.photo_caption,
+    secretNote: r.secret_note,
+    extras: r.extras ?? null,
     status: (r.status ?? "active") as InviteStatus,
     notifyEmail: r.notify_email,
     expiresAt: r.expires_at,
@@ -122,6 +188,12 @@ export function toPublicInvitation(i: Invitation): PublicInvitation {
     message: i.message,
     heroImageUrl: i.heroImageUrl,
     askTiming: i.askTiming,
+    playfulNo: i.playfulNo,
+    dateOptions: i.dateOptions,
+    stickerPack: i.stickerPack,
+    photoCaption: i.photoCaption,
+    secretNote: i.secretNote,
+    extras: i.extras,
   };
 }
 

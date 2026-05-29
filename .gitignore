@@ -26,6 +26,3 @@ yarn-debug.log*
 yarn-error.log*
 .vercel
 *.tsbuildinfo
-
-# supabase sql (local schema/migrations)
-supabase/*.sql

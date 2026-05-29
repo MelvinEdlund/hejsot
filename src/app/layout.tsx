@@ -23,13 +23,13 @@ const sans = Inter({
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl()),
   title: {
-    default: "hejsöt — you're invited",
+    default: "hejsöt",
     template: "%s · hejsöt",
   },
   description:
     "A quietly beautiful way to ask someone out. Make a personal invite, send one link, wait for the yes.",
   openGraph: {
-    title: "hejsöt — you're invited",
+    title: "hejsöt",
     description:
       "A quietly beautiful way to ask someone out. One link. One question. One yes.",
     type: "website",
@@ -49,9 +49,17 @@ export const viewport: Viewport = {
   maximumScale: 5,
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
-    <html lang="sv" className={`${display.variable} ${sans.variable}`} suppressHydrationWarning>
+    <html
+      lang="sv"
+      className={`${display.variable} ${sans.variable}`}
+      suppressHydrationWarning
+    >
       <head>
         {/* Set theme before paint to avoid a flash of the wrong theme. */}
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />

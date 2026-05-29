@@ -35,12 +35,15 @@ hejsot/
 ├── public/favicon.svg
 ├── supabase/
 │   ├── schema.sql                 # canonical schema (fresh installs)
-│   └── migration_v1_to_v2.sql     # additiv migration från befintlig MVP
+│   ├── migration_v1_to_v2.sql     # additiv migration från MVP
+│   ├── migration_v2_to_v3.sql     # lägger till playful_no + date_options
+│   └── migration_v3_to_v4.sql     # sticker_pack, photo_caption, secret_note
 └── src/
     ├── app/
     │   ├── layout.tsx             # root layout, fonts, theme, grain
     │   ├── globals.css            # design tokens + base styles
     │   ├── page.tsx               # landing
+    │   ├── skapa/page.tsx         # publikt skapa-flöde (inget login)
     │   ├── not-found.tsx
     │   ├── i/[slug]/page.tsx      # invite-sida (server) + OG metadata
     │   ├── api/og/route.tsx       # dynamisk OG-bild per inbjudan
@@ -48,7 +51,7 @@ hejsot/
     │       ├── layout.tsx
     │       ├── page.tsx           # dashboard + analytics
     │       ├── login/page.tsx
-    │       ├── new/page.tsx       # skapa inbjudan med live preview
+    │       ├── new/page.tsx       # admin: skapa med live preview
     │       └── invite/[id]/page.tsx
     ├── actions/
     │   ├── auth.ts                # login / logout
@@ -90,7 +93,9 @@ hejsot/
 Öppna Supabase → **SQL Editor** → New query:
 
 - **Helt nytt projekt?** Klistra in `supabase/schema.sql` och kör.
-- **Du har redan v1-tabellerna med data?** Klistra in `supabase/migration_v1_to_v2.sql` istället. Den är additiv — inga befintliga rader förstörs.
+- **Du har redan v1-tabellerna med data?** Klistra in `supabase/migration_v1_to_v2.sql` först.
+- **Du är på v2 och vill ha de nya fälten (`playful_no` + `date_options`)?** Kör `supabase/migration_v2_to_v3.sql`. Additiv.
+- **Du är på v3 och vill ha polaroid + stickers + hemlig rad?** Kör `supabase/migration_v3_to_v4.sql`. Additiv.
 
 ### 2. Miljövariabler
 ```bash

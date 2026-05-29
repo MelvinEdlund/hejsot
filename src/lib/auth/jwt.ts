@@ -1,15 +1,18 @@
 import { SignJWT, jwtVerify } from "jose";
 
 /**
- * Pure JWT helpers — no next/headers import — so they're safe to run in edge
- * middleware as well as in Node server actions.
+ * Pure JWT helpers — no next/headers import — safe on the edge and in server
+ * actions. Handles both the admin cookie and the regular-user cookie.
  */
 
-export const SESSION_COOKIE = "hejsot_session";
-export const MAX_AGE_SECONDS = 60 * 60 * 24 * 7; // 7 days
+export const SESSION_COOKIE      = "hejsot_session";       // admin
+export const USER_SESSION_COOKIE = "hejsot_user";          // regular user
+export const MAX_AGE_SECONDS     = 60 * 60 * 24 * 7;       // 7 days
+
+// ── Admin session ────────────────────────────────────────────────────────────
 
 export type SessionPayload = {
-  sub: string; // admin email
+  sub: string;   // admin email
   role: "admin";
 };
 
@@ -34,6 +37,41 @@ export async function verifySession(token: string | undefined): Promise<SessionP
     const { payload } = await jwtVerify(token, secret());
     if (payload.role !== "admin" || typeof payload.sub !== "string") return null;
     return { sub: payload.sub, role: "admin" };
+  } catch {
+    return null;
+  }
+}
+
+// ── Regular-user session ─────────────────────────────────────────────────────
+
+export type UserSessionPayload = {
+  sub: string;    // user UUID (users.id)
+  email: string;
+  role: "user";
+};
+
+export async function signUserSession(payload: UserSessionPayload): Promise<string> {
+  return new SignJWT({ role: payload.role, email: payload.email })
+    .setProtectedHeader({ alg: "HS256" })
+    .setSubject(payload.sub)
+    .setIssuedAt()
+    .setExpirationTime(`${MAX_AGE_SECONDS}s`)
+    .sign(secret());
+}
+
+export async function verifyUserSession(
+  token: string | undefined,
+): Promise<UserSessionPayload | null> {
+  if (!token) return null;
+  try {
+    const { payload } = await jwtVerify(token, secret());
+    if (
+      payload.role !== "user" ||
+      typeof payload.sub !== "string" ||
+      typeof payload.email !== "string"
+    )
+      return null;
+    return { sub: payload.sub, email: payload.email as string, role: "user" };
   } catch {
     return null;
   }

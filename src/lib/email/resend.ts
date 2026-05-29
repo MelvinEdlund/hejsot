@@ -37,7 +37,9 @@ export async function sendResponseNotification(n: Notification): Promise<void> {
       ? "sa ja."
       : n.answerType === "maybe"
         ? "är nyfiken."
-        : "svarade.";
+        : n.answerType === "no"
+          ? "sa nej (men du kämpade på)."
+          : "svarade.";
 
   const html = emailHtml({ ...n, verdict, url });
   const text =
