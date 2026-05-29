@@ -10,7 +10,7 @@ import { z } from "zod";
  */
 
 const publicSchema = z.object({
-  NEXT_PUBLIC_SITE_URL: z.string().url().default("http://localhost:3000"),
+  NEXT_PUBLIC_SITE_URL: z.string().url().default("https://hejsot.lol"),
   NEXT_PUBLIC_SUPABASE_URL: z.string().url().optional(),
   NEXT_PUBLIC_SUPABASE_ANON_KEY: z.string().optional(),
 });
@@ -51,7 +51,8 @@ export function serverEnv(): ServerEnv {
   if (cached) return cached;
   const parsed = serverSchema.safeParse({
     // Service-role operations may reuse the public URL.
-    SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL ?? process.env.SUPABASE_URL,
+    SUPABASE_URL:
+      process.env.NEXT_PUBLIC_SUPABASE_URL ?? process.env.SUPABASE_URL,
     SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY,
     ADMIN_EMAIL: process.env.ADMIN_EMAIL,
     ADMIN_PASSWORD: process.env.ADMIN_PASSWORD,
@@ -62,8 +63,12 @@ export function serverEnv(): ServerEnv {
     UPSTASH_REDIS_REST_TOKEN: process.env.UPSTASH_REDIS_REST_TOKEN,
   });
   if (!parsed.success) {
-    const issues = parsed.error.issues.map((i) => `${i.path.join(".")}: ${i.message}`).join("; ");
-    throw new Error(`Invalid server environment — ${issues}. See .env.example.`);
+    const issues = parsed.error.issues
+      .map((i) => `${i.path.join(".")}: ${i.message}`)
+      .join("; ");
+    throw new Error(
+      `Invalid server environment — ${issues}. See .env.example.`,
+    );
   }
   cached = parsed.data;
   return cached;
