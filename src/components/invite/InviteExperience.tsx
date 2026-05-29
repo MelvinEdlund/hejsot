@@ -485,17 +485,6 @@ export function InviteExperience({
                 {firstName}
               </motion.h1>
 
-              {/* Litet handgjort-sticker */}
-              <motion.div
-                initial={{ opacity: 0, rotate: -6, scale: 0.8 }}
-                animate={{ opacity: 1, rotate: -3, scale: 1 }}
-                transition={{ delay: 0.32, duration: 0.6, ease }}
-                className="mt-3 inline-block rounded-full border border-dashed px-3 py-1 text-[11px] italic text-muted/60"
-                style={{ borderColor: `${t.accent}40` }}
-              >
-                {fromName ? `av ${fromName.toLowerCase()}` : ""}
-              </motion.div>
-
               {invitation.heroImageUrl && (
                 <motion.div
                   initial={{ opacity: 0, y: 16, rotate: -3 }}
