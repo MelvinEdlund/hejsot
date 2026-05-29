@@ -36,7 +36,9 @@ async function purgeExpiredInvitations(): Promise<void> {
 }
 
 /** Public invite for the /i/[slug] page. Null if missing, archived or expired. */
-export async function getPublicInvitation(slug: string): Promise<PublicInvitation | null> {
+export async function getPublicInvitation(
+  slug: string,
+): Promise<PublicInvitation | null> {
   const { data, error } = await supabaseAdmin()
     .from("invitations")
     .select(INVITE_COLUMNS)
@@ -53,7 +55,9 @@ export async function getPublicInvitation(slug: string): Promise<PublicInvitatio
 }
 
 /** Full invite row by slug (used when emailing the creator). */
-export async function getInvitationBySlug(slug: string): Promise<Invitation | null> {
+export async function getInvitationBySlug(
+  slug: string,
+): Promise<Invitation | null> {
   const { data, error } = await supabaseAdmin()
     .from("invitations")
     .select(INVITE_COLUMNS)
@@ -125,7 +129,10 @@ export async function insertResponse(values: {
   if (invitation.status === "archived") {
     return { ok: false, error: "Inbjudan ar inte langre aktiv." };
   }
-  if (invitation.expiresAt && new Date(invitation.expiresAt).getTime() < Date.now()) {
+  if (
+    invitation.expiresAt &&
+    new Date(invitation.expiresAt).getTime() < Date.now()
+  ) {
     await deleteInvitation(invitation.id);
     return { ok: false, error: "Inbjudan har forfallit." };
   }
@@ -168,7 +175,9 @@ export async function getInvitationDetail(
     .eq("id", id)
     .maybeSingle();
   if (error || !data) return null;
-  const { responses, ...row } = data as InvitationRow & { responses: ResponseRow[] };
+  const { responses, ...row } = data as InvitationRow & {
+    responses: ResponseRow[];
+  };
   return {
     invitation: rowToInvitation(row as InvitationRow),
     responses: (responses ?? [])
@@ -177,13 +186,22 @@ export async function getInvitationDetail(
   };
 }
 
-export async function setInvitationStatus(id: string, status: InviteStatus): Promise<boolean> {
-  const { error } = await supabaseAdmin().from("invitations").update({ status }).eq("id", id);
+export async function setInvitationStatus(
+  id: string,
+  status: InviteStatus,
+): Promise<boolean> {
+  const { error } = await supabaseAdmin()
+    .from("invitations")
+    .update({ status })
+    .eq("id", id);
   return !error;
 }
 
 export async function deleteInvitation(id: string): Promise<boolean> {
-  const { error } = await supabaseAdmin().from("invitations").delete().eq("id", id);
+  const { error } = await supabaseAdmin()
+    .from("invitations")
+    .delete()
+    .eq("id", id);
   return !error;
 }
 
@@ -220,7 +238,9 @@ export async function getUserByEmail(email: string): Promise<UserRow | null> {
 }
 
 /** Personal dashboard: a user's own invites, newest first, with response counts. */
-export async function listUserInvitations(userId: string): Promise<Invitation[]> {
+export async function listUserInvitations(
+  userId: string,
+): Promise<Invitation[]> {
   await purgeExpiredInvitations();
   const { data, error } = await supabaseAdmin()
     .from("invitations")

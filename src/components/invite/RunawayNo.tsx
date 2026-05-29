@@ -5,24 +5,19 @@ import { motion, useReducedMotion } from "framer-motion";
 
 /**
  * RunawayNo — nej-knapp som flyr snabbare och längre för varje försök.
- * Eskalerar tills den ger upp och låter sig klickas.
+ * Den går aldrig att klicka.
  */
 export function RunawayNo({
-  onPick,
   onDodge,
-  giveUpAfter = 7,
   className = "",
 }: {
-  onPick: () => void;
   onDodge?: (count: number) => void;
-  giveUpAfter?: number;
   className?: string;
 }) {
   const reduce = useReducedMotion();
   const wrapRef = useRef<HTMLDivElement | null>(null);
   const [pos, setPos] = useState({ x: 0, y: 0 });
   const [dodges, setDodges] = useState(0);
-  const [given, setGiven] = useState(false);
 
   // Eskalerande etiketter
   const labels = [
@@ -37,12 +32,8 @@ export function RunawayNo({
   ];
   const label = labels[Math.min(dodges, labels.length - 1)];
 
-  useEffect(() => {
-    if (dodges >= giveUpAfter && !given) setGiven(true);
-  }, [dodges, giveUpAfter, given]);
-
   function hop() {
-    if (given || reduce) return;
+    if (reduce) return;
     const wrap = wrapRef.current;
     if (!wrap) return;
     const w = wrap.clientWidth;
@@ -60,11 +51,7 @@ export function RunawayNo({
   }
 
   function handleClick() {
-    if (!given) {
-      hop();
-      return;
-    }
-    onPick();
+    hop();
   }
 
   return (

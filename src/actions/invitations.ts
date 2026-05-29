@@ -17,7 +17,12 @@ import { rateLimit } from "@/lib/rate-limit";
 import { sendResponseNotification } from "@/lib/email/resend";
 import type { AnswerType } from "@/lib/types";
 
-type CreateResult = { ok: boolean; slug?: string; url?: string; error?: string };
+type CreateResult = {
+  ok: boolean;
+  slug?: string;
+  url?: string;
+  error?: string;
+};
 type ActionResult = { ok: boolean; error?: string };
 
 async function isAdmin(): Promise<boolean> {
@@ -41,15 +46,24 @@ export async function createInvitation(input: unknown): Promise<CreateResult> {
 
   if (!admin && !userId) {
     const ip = clientIp(await headers());
-    const { success } = await rateLimit(`create:${ip}`, { limit: 5, windowSec: 600 });
+    const { success } = await rateLimit(`create:${ip}`, {
+      limit: 5,
+      windowSec: 600,
+    });
     if (!success) {
-      return { ok: false, error: "For manga inbjudningar just nu. Forsok igen om en stund." };
+      return {
+        ok: false,
+        error: "For manga inbjudningar just nu. Forsok igen om en stund.",
+      };
     }
   }
 
   const parsed = createInvitationSchema.safeParse(input);
   if (!parsed.success) {
-    return { ok: false, error: parsed.error.issues[0]?.message ?? "Kontrollera falten." };
+    return {
+      ok: false,
+      error: parsed.error.issues[0]?.message ?? "Kontrollera falten.",
+    };
   }
   const d = parsed.data;
 
@@ -59,7 +73,8 @@ export async function createInvitation(input: unknown): Promise<CreateResult> {
     const slug = makeSlug(d.recipientName);
     const rawExtras = d.extras ?? {};
     const hasExtras = Object.values(rawExtras).some(
-      (v) => v !== undefined && v !== "" && (Array.isArray(v) ? v.length > 0 : true),
+      (v) =>
+        v !== undefined && v !== "" && (Array.isArray(v) ? v.length > 0 : true),
     );
     const extras = hasExtras ? rawExtras : null;
 
@@ -102,7 +117,10 @@ export async function updateInvitation(input: unknown): Promise<ActionResult> {
   const { id, action } = parsed.data;
 
   if (action === "archive" || action === "activate") {
-    const ok = await setInvitationStatus(id, action === "archive" ? "archived" : "active");
+    const ok = await setInvitationStatus(
+      id,
+      action === "archive" ? "archived" : "active",
+    );
     if (ok) revalidatePath("/studio");
     return { ok, error: ok ? undefined : "Kunde inte uppdatera." };
   }
@@ -117,7 +135,8 @@ export async function updateInvitation(input: unknown): Promise<ActionResult> {
   if (!detail) return { ok: false, error: "Inbjudan finns inte." };
   const latest = detail.responses[0];
   if (!latest) return { ok: false, error: "Inga svar att skicka." };
-  if (!detail.invitation.notifyEmail) return { ok: false, error: "Ingen notis-adress angiven." };
+  if (!detail.invitation.notifyEmail)
+    return { ok: false, error: "Ingen notis-adress angiven." };
 
   await sendResponseNotification({
     to: detail.invitation.notifyEmail,

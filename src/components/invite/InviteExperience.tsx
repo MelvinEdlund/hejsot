@@ -713,7 +713,7 @@ export function InviteExperience({
 
                 <div className="relative mt-4 flex justify-center">
                   {invitation.playfulNo ? (
-                    <RunawayNo onPick={() => choose("no")} />
+                    <RunawayNo />
                   ) : (
                     <button
                       onClick={() => choose("no")}
