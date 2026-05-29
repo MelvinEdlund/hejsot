@@ -954,13 +954,13 @@ export function InviteExperience({
                 className="mt-7"
               >
                 <div className="font-display text-[14px] italic text-muted mb-3">
-                  vill du säga nåt? (valfritt)
+                  en sak du vill att jag vet
                 </div>
                 <input
                   value={note}
                   onChange={(e) => setNote(e.target.value)}
                   maxLength={200}
-                  placeholder="en sak du vill att hen vet…"
+                  placeholder="en sak du vill att jag vet…"
                   className="w-full rounded-2xl border border-border/15 bg-surface/60 px-4 py-3.5 text-[15px] text-fg placeholder:text-muted/55 focus:border-[var(--accent)] focus:outline-none focus:ring-2 focus:ring-[var(--accent)]/10 backdrop-blur-sm transition-all"
                 />
               </motion.div>
