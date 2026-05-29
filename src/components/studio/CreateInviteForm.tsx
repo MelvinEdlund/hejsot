@@ -86,6 +86,7 @@ const YES_SUGGESTIONS = [
   "självfallet ✨",
   "givetvis 🌹",
 ];
+const DATE_SUGGESTIONS = ["fredag 19:00", "lördag 19:00"];
 
 const ease: [number, number, number, number] = [0.22, 1, 0.36, 1];
 
@@ -523,6 +524,13 @@ export function CreateInviteForm({
     }
     setDateOptions([...dateOptions, v]);
     setDateDraft("");
+  }
+  function toggleDateOption(value: string) {
+    setDateOptions((prev) => {
+      if (prev.includes(value)) return prev.filter((x) => x !== value);
+      if (prev.length >= 5) return prev;
+      return [...prev, value];
+    });
   }
 
   function addReason() {
@@ -1344,6 +1352,33 @@ export function CreateInviteForm({
                         </div>
                       </div>
                       <div className="mt-3 flex flex-wrap gap-2">
+                        {DATE_SUGGESTIONS.map((suggestion) => {
+                          const checked = dateOptions.includes(suggestion);
+                          const disabled = !checked && dateOptions.length >= 5;
+                          return (
+                            <label
+                              key={suggestion}
+                              className={cn(
+                                "inline-flex items-center gap-2 rounded-full border border-border/15 bg-surface/70 px-3 py-1 text-[13px] text-fg transition-colors",
+                                checked
+                                  ? "border-transparent bg-accent/15"
+                                  : "hover:border-border/30",
+                                disabled && "opacity-50 cursor-not-allowed",
+                              )}
+                            >
+                              <input
+                                type="checkbox"
+                                checked={checked}
+                                onChange={() => toggleDateOption(suggestion)}
+                                disabled={disabled}
+                                className="h-3.5 w-3.5 accent-[rgb(var(--accent))]"
+                              />
+                              {suggestion}
+                            </label>
+                          );
+                        })}
+                      </div>
+                      <div className="mt-2 flex flex-wrap gap-2">
                         {dateOptions.map((d) => (
                           <span
                             key={d}
