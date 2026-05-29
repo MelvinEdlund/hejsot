@@ -94,7 +94,7 @@ const ease: [number, number, number, number] = [0.22, 1, 0.36, 1];
 const STEP_META = [
   { label: "stämning", emoji: "✦" },
   { label: "innehåll", emoji: "♡" },
-  { label: "extras", emoji: "✨" },
+  { label: "extra", emoji: "✨" },
   { label: "detaljer", emoji: "🔒" },
 ];
 

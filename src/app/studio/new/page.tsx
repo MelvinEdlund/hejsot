@@ -11,8 +11,12 @@ export default async function NewInvitePage() {
     <>
       <StudioHeader showNew={false} />
       <main className="mx-auto max-w-content px-5 py-8">
-        <h1 className="font-display text-3xl font-medium text-fg">Ny inbjudan</h1>
-        <p className="mt-1 text-[14px] text-muted">Valj en stamning, gor den personlig, dela lanken.</p>
+        <h1 className="font-display text-3xl font-medium text-fg">
+          Ny inbjudan
+        </h1>
+        <p className="mt-1 text-[14px] text-muted">
+          Välj en stämning, gör den personlig, dela länken.
+        </p>
         <div className="mt-8">
           <CreateInviteForm />
         </div>
