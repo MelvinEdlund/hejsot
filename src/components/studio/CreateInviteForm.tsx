@@ -474,7 +474,7 @@ export function CreateInviteForm({
   const [heroImageUrl, setHeroImageUrl] = useState<string | null>(null);
   const [photoCaption, setPhotoCaption] = useState("");
   const [secretNote, setSecretNote] = useState("");
-  const [expiresInDays, setExpiresInDays] = useState(0);
+  const [expiresInDays] = useState(7);
   const [touched, setTouched] = useState<{ h: boolean; m: boolean }>({
     h: false,
     m: false,
@@ -627,7 +627,7 @@ export function CreateInviteForm({
       stickerPack,
       photoCaption: photoCaption || undefined,
       secretNote: secretNote || undefined,
-      expiresInDays: expiresInDays || undefined,
+      expiresInDays,
       extras,
     });
 
@@ -717,9 +717,7 @@ export function CreateInviteForm({
                       <div className="mb-1 text-[13px] font-medium uppercase tracking-[0.12em] text-muted/70">
                         välj stämning
                       </div>
-                      <p className="text-[13px] text-muted">
-                        grundtonen för hela inbjudan — färger, känsla, allt.
-                      </p>
+                      <p className="text-[13px] text-muted"></p>
                     </div>
 
                     <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
@@ -801,7 +799,7 @@ export function CreateInviteForm({
                       <div className="mb-1 text-[13px] font-medium uppercase tracking-[0.12em] text-muted/70">
                         till & från
                       </div>
-                      <p className="text-[13px] text-muted">vem är det till?</p>
+                      <p className="text-[13px] text-muted"></p>
                     </div>
 
                     <div className="grid gap-4 sm:grid-cols-2">
@@ -837,10 +835,7 @@ export function CreateInviteForm({
                       />
                     </Field>
 
-                    <Field
-                      label="meddelande"
-                      hint="skriv som du pratar. kort är bra."
-                    >
+                    <Field label="meddelande" hint="">
                       <Textarea
                         value={message}
                         onChange={(e) => {
@@ -860,9 +855,7 @@ export function CreateInviteForm({
                       <div className="mb-1 text-[13px] font-medium uppercase tracking-[0.12em] text-muted/70">
                         extra charm
                       </div>
-                      <p className="text-[13px] text-muted">
-                        allt är valfritt. lägg till det som passar er.
-                      </p>
+                      <p className="text-[13px] text-muted"></p>
                     </div>
 
                     {/* Animerad bakgrund */}
@@ -1207,7 +1200,7 @@ export function CreateInviteForm({
                     <SectionCard
                       icon={Gamepad2}
                       title="mini-quiz"
-                      subtitle="1–3 frågor innan inbjudan öppnar. alla svar är rätt."
+                      subtitle="1–3 frågor. alla svar är rätt."
                       badge="nytt"
                     >
                       {quiz.map((q, qIdx) => (
@@ -1467,19 +1460,8 @@ export function CreateInviteForm({
 
                       <div className="flex items-center justify-between gap-3 pt-1 border-t border-border/10">
                         <span className="text-[14px] text-muted">
-                          länken förfaller
+                          länken förfaller om 7 dagar
                         </span>
-                        <select
-                          value={expiresInDays}
-                          onChange={(e) =>
-                            setExpiresInDays(Number(e.target.value))
-                          }
-                          className="rounded-xl border border-border/15 bg-surface px-3 py-1.5 text-[13px] text-fg focus:outline-none"
-                        >
-                          <option value={0}>aldrig</option>
-                          <option value={7}>om 7 dagar</option>
-                          <option value={30}>om 30 dagar</option>
-                        </select>
                       </div>
                     </div>
 

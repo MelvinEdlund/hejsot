@@ -53,9 +53,7 @@ export async function createInvitation(input: unknown): Promise<CreateResult> {
   }
   const d = parsed.data;
 
-  const expiresAt = d.expiresInDays
-    ? new Date(Date.now() + d.expiresInDays * 86_400_000).toISOString()
-    : null;
+  const expiresAt = new Date(Date.now() + 7 * 86_400_000).toISOString();
 
   for (let attempt = 0; attempt < 5; attempt++) {
     const slug = makeSlug(d.recipientName);

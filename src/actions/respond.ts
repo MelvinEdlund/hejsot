@@ -30,7 +30,10 @@ export async function recordView(slug: string): Promise<void> {
 export async function submitResponse(input: unknown): Promise<SubmitResult> {
   const parsed = responseSchema.safeParse(input);
   if (!parsed.success) {
-    return { ok: false, error: parsed.error.issues[0]?.message ?? "Ogiltigt svar." };
+    return {
+      ok: false,
+      error: parsed.error.issues[0]?.message ?? "Ogiltigt svar.",
+    };
   }
   const data = parsed.data;
 
@@ -38,8 +41,15 @@ export async function submitResponse(input: unknown): Promise<SubmitResult> {
   if (data.website && data.website.length > 0) return { ok: true };
 
   const ip = clientIp(await headers());
-  const { success } = await rateLimit(`respond:${ip}`, { limit: 20, windowSec: 600 });
-  if (!success) return { ok: false, error: "För många svar just nu. Försök igen om en stund." };
+  const { success } = await rateLimit(`respond:${ip}`, {
+    limit: 20,
+    windowSec: 600,
+  });
+  if (!success)
+    return {
+      ok: false,
+      error: "För många svar just nu. Försök igen om en stund.",
+    };
 
   const result = await insertResponse({
     slug: data.slug,

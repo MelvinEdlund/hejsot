@@ -26,6 +26,15 @@ function isExpired(row: Pick<InvitationRow, "expires_at">): boolean {
   return !!row.expires_at && new Date(row.expires_at).getTime() < Date.now();
 }
 
+async function purgeExpiredInvitations(): Promise<void> {
+  const now = new Date().toISOString();
+  await supabaseAdmin()
+    .from("invitations")
+    .delete()
+    .not("expires_at", "is", null)
+    .lt("expires_at", now);
+}
+
 /** Public invite for the /i/[slug] page. Null if missing, archived or expired. */
 export async function getPublicInvitation(slug: string): Promise<PublicInvitation | null> {
   const { data, error } = await supabaseAdmin()
@@ -35,7 +44,11 @@ export async function getPublicInvitation(slug: string): Promise<PublicInvitatio
     .maybeSingle();
   if (error || !data) return null;
   const row = data as InvitationRow;
-  if (row.status === "archived" || isExpired(row)) return null;
+  if (row.status === "archived") return null;
+  if (isExpired(row)) {
+    await deleteInvitation(row.id);
+    return null;
+  }
   return toPublicInvitation(rowToInvitation(row));
 }
 
@@ -109,7 +122,13 @@ export async function insertResponse(values: {
 }): Promise<{ ok: boolean; invitation?: Invitation; error?: string }> {
   const invitation = await getInvitationBySlug(values.slug);
   if (!invitation) return { ok: false, error: "Inbjudan finns inte." };
-  if (invitation.status === "archived") return { ok: false, error: "Inbjudan ar inte langre aktiv." };
+  if (invitation.status === "archived") {
+    return { ok: false, error: "Inbjudan ar inte langre aktiv." };
+  }
+  if (invitation.expiresAt && new Date(invitation.expiresAt).getTime() < Date.now()) {
+    await deleteInvitation(invitation.id);
+    return { ok: false, error: "Inbjudan har forfallit." };
+  }
 
   const { error } = await supabaseAdmin().from("responses").insert({
     invitation_id: invitation.id,
@@ -127,6 +146,7 @@ type InvitationWithCount = InvitationRow & { responses: { count: number }[] };
 
 /** All invites for the admin dashboard, newest first, with response counts. */
 export async function listInvitations(): Promise<Invitation[]> {
+  await purgeExpiredInvitations();
   const { data, error } = await supabaseAdmin()
     .from("invitations")
     .select(`${INVITE_COLUMNS}, responses(count)`)
@@ -201,6 +221,7 @@ export async function getUserByEmail(email: string): Promise<UserRow | null> {
 
 /** Personal dashboard: a user's own invites, newest first, with response counts. */
 export async function listUserInvitations(userId: string): Promise<Invitation[]> {
+  await purgeExpiredInvitations();
   const { data, error } = await supabaseAdmin()
     .from("invitations")
     .select(`${INVITE_COLUMNS}, responses(count)`)
