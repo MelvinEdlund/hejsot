@@ -27,11 +27,11 @@ export const metadata: Metadata = {
     template: "%s · hejsöt",
   },
   description:
-    "A quietly beautiful way to ask someone out. Make a personal invite, send one link, wait for the yes.",
+    "Skapa en personlig inbjudan, skicka en länk och vänta på ett ja.",
   openGraph: {
     title: "hejsöt",
     description:
-      "A quietly beautiful way to ask someone out. One link. One question. One yes.",
+      "Skapa en personlig inbjudan, skicka en länk och vänta på ett ja.",
     type: "website",
     locale: "sv_SE",
   },
