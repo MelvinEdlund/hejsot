@@ -1,4 +1,4 @@
-import { ArrowRight, Camera, Sparkles, Heart, Lock } from "lucide-react";
+import { ArrowRight, Camera, Sparkles, Heart, Lock, Mail } from "lucide-react";
 import { SiteHeader } from "@/components/marketing/SiteHeader";
 import { SiteFooter } from "@/components/marketing/SiteFooter";
 import { DemoInvite } from "@/components/marketing/DemoInvite";
@@ -23,9 +23,9 @@ const FEATURES = [
     body: "Nej-knapp som springer iväg när man försöker klicka. bara ja finns kvar.",
   },
   {
-    icon: Lock,
-    title: "hemlig rad",
-    body: "ett låst meddelande som dyker upp när man trycker.",
+    icon: Mail,
+    title: "svar direkt i din mail",
+    body: "vi pingar dig så fort inbjudan har svarats på, utan att du behöver logga in.",
   },
 ];
 
