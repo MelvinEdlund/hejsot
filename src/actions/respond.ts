@@ -10,10 +10,16 @@ import type { AnswerType } from "@/lib/types";
 
 type SubmitResult = { ok: boolean; error?: string };
 
-/** Public: count a view. Best-effort, never throws to the client. */
+/**
+ * Public: count a view. Best-effort, never throws to the client.
+ * Rate-limited to 60 per IP per 10 min to prevent open-count inflation.
+ */
 export async function recordView(slug: string): Promise<void> {
   if (!slug || slug.length > 80) return;
   try {
+    const ip = clientIp(await headers());
+    const { success } = await rateLimit(`view:${ip}`, { limit: 60, windowSec: 600 });
+    if (!success) return;
     await recordOpen(slug);
   } catch {
     /* analytics must never break the experience */

@@ -18,7 +18,15 @@ const extrasSchema = z
     bgTheme: z.enum(BG_THEMES).optional(),
     reasons: z.array(trimmed(120).min(1)).max(5).optional(),
     countdown: z.string().optional().or(z.literal("")),
-    musicUrl: z.string().optional().or(z.literal("")),
+    musicUrl: z
+      .string()
+      .max(500)
+      .refine(
+        (v) => !v || /^(https?:\/\/|spotify:)/i.test(v),
+        "Musik-URL måste vara en https://-länk eller spotify:-URI.",
+      )
+      .optional()
+      .or(z.literal("")),
     musicLabel: trimmed(80).optional().or(z.literal("")),
     yesText: trimmed(60).optional().or(z.literal("")),
     quiz: z.array(quizQuestionSchema).max(3).optional(),

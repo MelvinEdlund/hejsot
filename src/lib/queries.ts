@@ -211,6 +211,7 @@ export type UserRow = {
   id: string;
   email: string;
   password_hash: string;
+  email_verified: boolean;
   created_at: string;
 };
 
@@ -230,11 +231,25 @@ export async function createUser(
 export async function getUserByEmail(email: string): Promise<UserRow | null> {
   const { data, error } = await supabaseAdmin()
     .from("users")
-    .select("id, email, password_hash, created_at")
+    .select("id, email, password_hash, email_verified, created_at")
     .eq("email", email.toLowerCase().trim())
     .maybeSingle();
   if (error || !data) return null;
   return data as UserRow;
+}
+
+/** Marks a user's email as verified. Returns the user's email for session creation. */
+export async function markEmailVerified(
+  userId: string,
+): Promise<{ ok: boolean; email?: string }> {
+  const { data, error } = await supabaseAdmin()
+    .from("users")
+    .update({ email_verified: true })
+    .eq("id", userId)
+    .select("email")
+    .single();
+  if (error || !data) return { ok: false };
+  return { ok: true, email: (data as { email: string }).email };
 }
 
 /** Personal dashboard: a user's own invites, newest first, with response counts. */

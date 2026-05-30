@@ -4,7 +4,16 @@ import { useActionState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Mail, Lock, LogIn, UserPlus, Eye, EyeOff, AlertCircle } from "lucide-react";
+import {
+  Mail,
+  Lock,
+  LogIn,
+  UserPlus,
+  Eye,
+  EyeOff,
+  AlertCircle,
+  MailCheck,
+} from "lucide-react";
 import { signIn, signUp, type AuthState } from "@/actions/user-auth";
 
 const initialState: AuthState = { ok: false };
@@ -23,21 +32,47 @@ export function LoginForm({ redirectTo = "/studio", defaultTab = "login" }: Prop
   const [loginState, loginAction, loginPending] = useActionState(signIn, initialState);
   const [signupState, signupAction, signupPending] = useActionState(signUp, initialState);
 
-  const state = tab === "login" ? loginState : signupState;
+  const state   = tab === "login" ? loginState : signupState;
   const pending = tab === "login" ? loginPending : signupPending;
 
-  // On success redirect
+  // Redirect on successful login (NOT on signup — that shows "check your email").
   useEffect(() => {
-    if (state.ok) {
+    if (state.ok && !state.requiresVerification) {
       startTransition(() => {
         router.push(redirectTo);
         router.refresh();
       });
     }
-  }, [state.ok, redirectTo, router]);
+  }, [state.ok, state.requiresVerification, redirectTo, router]);
 
   const inputCls =
     "w-full rounded-xl border border-border/10 bg-surface/60 px-4 py-3 text-[15px] text-fg placeholder:text-muted/60 outline-none focus:border-accent/40 focus:ring-2 focus:ring-accent/10 transition-all";
+
+  // Show "check your email" confirmation after signup.
+  if (state.ok && state.requiresVerification) {
+    return (
+      <div className="w-full text-center">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.92 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.4 }}
+          className="rounded-3xl border border-border/10 bg-surface/60 p-8 backdrop-blur-sm"
+        >
+          <div className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-full bg-accent/10">
+            <MailCheck className="h-6 w-6 text-accent" />
+          </div>
+          <h2 className="font-display text-2xl font-medium text-fg">Kolla inkorgen</h2>
+          <p className="mt-3 text-[15px] leading-relaxed text-muted">
+            Vi har skickat en bekräftelselänk till din e-post. Klicka på länken för att aktivera
+            ditt konto — den gäller i 24 timmar.
+          </p>
+          <p className="mt-4 text-[13px] text-muted/60">
+            Inget mail? Kolla skräpposten, eller prova att registrera dig igen.
+          </p>
+        </motion.div>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full">
@@ -62,9 +97,7 @@ export function LoginForm({ redirectTo = "/studio", defaultTab = "login" }: Prop
             type="button"
             onClick={() => setTab(t)}
             className={`flex-1 rounded-xl py-2.5 text-[14px] font-medium transition-all ${
-              tab === t
-                ? "bg-surface shadow-sm text-fg"
-                : "text-muted hover:text-fg"
+              tab === t ? "bg-surface shadow-sm text-fg" : "text-muted hover:text-fg"
             }`}
           >
             {t === "login" ? "Logga in" : "Skapa konto"}
@@ -110,23 +143,27 @@ export function LoginForm({ redirectTo = "/studio", defaultTab = "login" }: Prop
             <button
               type="button"
               onClick={() => setShowPw((p) => !p)}
-              className="absolute right-4 top-1/2 -translate-y-1/2 text-muted/60 hover:text-muted transition-colors"
+              className="absolute right-4 top-1/2 -translate-y-1/2 text-muted/60 transition-colors hover:text-muted"
               aria-label={showPw ? "Dölj lösenord" : "Visa lösenord"}
             >
               {showPw ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
             </button>
           </div>
 
-          {/* Error */}
+          {/* Error / verification notice */}
           <AnimatePresence>
             {state.error && !state.ok && (
               <motion.div
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: "auto" }}
                 exit={{ opacity: 0, height: 0 }}
-                className="flex items-center gap-2 rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-[13px] text-red-400"
+                className={`flex items-start gap-2 rounded-xl border px-4 py-3 text-[13px] ${
+                  state.requiresVerification
+                    ? "border-accent/20 bg-accent/10 text-accent"
+                    : "border-red-500/20 bg-red-500/10 text-red-400"
+                }`}
               >
-                <AlertCircle className="h-4 w-4 shrink-0" />
+                <AlertCircle className="mt-px h-4 w-4 shrink-0" />
                 {state.error}
               </motion.div>
             )}
@@ -155,7 +192,7 @@ export function LoginForm({ redirectTo = "/studio", defaultTab = "login" }: Prop
         </motion.form>
       </AnimatePresence>
 
-      {/* Divider + anonymous note */}
+      {/* Footer links */}
       <p className="mt-6 text-center text-[13px] text-muted">
         {tab === "login" ? (
           <>
@@ -182,7 +219,8 @@ export function LoginForm({ redirectTo = "/studio", defaultTab = "login" }: Prop
         )}
       </p>
       <p className="mt-3 text-center text-[12px] text-muted/60">
-        Du kan även skapa inbjudningar utan att logga in — kontot är bara för att hålla koll på svaren.
+        Du kan även skapa inbjudningar utan att logga in — kontot är bara för att hålla koll på
+        svaren.
       </p>
     </div>
   );

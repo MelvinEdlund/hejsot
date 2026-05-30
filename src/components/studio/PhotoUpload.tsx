@@ -9,6 +9,12 @@ type InputMode = "upload" | "url";
 /**
  * Drag-and-drop foto-uppladdning eller URL-länk.
  * Returnerar publika URL:en när det är klart.
+ *
+ * Säkerhetsdesign:
+ *  - Uppladdningar går via /api/upload-url som rate-limitar per IP och
+ *    utfärdar ett Supabase signed upload-token server-side.
+ *  - Bucket-policyn "hero-images anon upload" behövs INTE längre.
+ *  - Ingen direkt anon-åtkomst till storage-bucket krävs.
  */
 export function PhotoUpload({
   value,
@@ -30,6 +36,8 @@ export function PhotoUpload({
 
   async function upload(file: File) {
     setError(null);
+
+    // Client-side pre-checks (authoritative check is server-side).
     if (!file.type.startsWith("image/")) {
       setError("bara bilder!");
       return;
@@ -38,25 +46,60 @@ export function PhotoUpload({
       setError("max 5 mb");
       return;
     }
+
     const sb = supabaseBrowser();
     if (!sb) {
-      setError("uppladdning är inte konfigurerad än");
+      setError("uppladdning är inte konfigurerad");
       return;
     }
+
     setUploading(true);
-    const ext = (file.name.split(".").pop() ?? "jpg").toLowerCase();
-    const key = `${crypto.randomUUID()}.${ext}`;
-    const { error: upErr } = await sb.storage
-      .from("hero-images")
-      .upload(key, file, { upsert: false, contentType: file.type });
-    if (upErr) {
+
+    // 1. Hämta ett server-utfärdat signed upload-token (rate-limitad).
+    let token: string;
+    let path: string;
+    let publicUrl: string;
+    try {
+      const res = await fetch("/api/upload-url", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ mimeType: file.type, size: file.size }),
+      });
+      if (!res.ok) {
+        const body = (await res.json().catch(() => ({}))) as {
+          error?: string;
+        };
+        setUploading(false);
+        setError(body.error ?? "kunde inte ladda upp");
+        return;
+      }
+      const body = (await res.json()) as {
+        token: string;
+        path: string;
+        publicUrl: string;
+      };
+      token = body.token;
+      path = body.path;
+      publicUrl = body.publicUrl;
+    } catch {
       setUploading(false);
       setError("kunde inte ladda upp");
       return;
     }
-    const { data } = sb.storage.from("hero-images").getPublicUrl(key);
+
+    // 2. Ladda upp direkt till Supabase via det signerade tokenet.
+    //    Ingen anon-upload-policy krävs på bucket-nivå.
+    const { error: upErr } = await sb.storage
+      .from("hero-images")
+      .uploadToSignedUrl(path, token, file, { contentType: file.type });
+
     setUploading(false);
-    onChange(data.publicUrl);
+    if (upErr) {
+      setError("kunde inte ladda upp");
+      return;
+    }
+
+    onChange(publicUrl);
   }
 
   function onPick(e: React.ChangeEvent<HTMLInputElement>) {
