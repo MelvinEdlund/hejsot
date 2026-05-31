@@ -75,6 +75,8 @@ export type Invitation = {
   status: InviteStatus;
   notifyEmail: string | null;
   expiresAt: string | null;
+  isUnlocked: boolean;
+  stripeSessionId: string | null;
   createdAt: string;
   openedAt: string | null;
   openCount: number;
@@ -133,6 +135,8 @@ export type InvitationRow = {
   status: string | null;
   notify_email: string | null;
   expires_at: string | null;
+  is_unlocked: boolean;
+  stripe_session_id: string | null;
   created_at: string;
   opened_at: string | null;
   open_count: number;
@@ -172,6 +176,8 @@ export function rowToInvitation(r: InvitationRow): Invitation {
     status: (r.status ?? "active") as InviteStatus,
     notifyEmail: r.notify_email,
     expiresAt: r.expires_at,
+    isUnlocked: r.is_unlocked ?? false,
+    stripeSessionId: r.stripe_session_id ?? null,
     createdAt: r.created_at,
     openedAt: r.opened_at,
     openCount: r.open_count ?? 0,

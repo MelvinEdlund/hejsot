@@ -40,6 +40,7 @@ import { cn } from "@/lib/utils";
 import { Field, Input, Textarea } from "@/components/ui/Field";
 import { TemplateIcon } from "@/components/ui/TemplateIcon";
 import { InvitePreview } from "@/components/studio/InvitePreview";
+import { PaywallScreen } from "@/components/studio/PaywallScreen";
 import { PhotoUpload } from "@/components/studio/PhotoUpload";
 import { Spinner } from "@/components/ui/Spinner";
 
@@ -693,10 +694,7 @@ export function CreateInviteForm({
     setResult({ slug: res.slug!, url: res.url });
   }
 
-  if (result)
-    return <ShareSuccess result={result} accentFrom={t.from} accentTo={t.to} />;
-
-  // Preview extras
+  // Preview extras (computed here so it's available both for PaywallScreen early return and the live preview below)
   const previewExtras: InviteExtras = {
     bgTheme: bgTheme !== "none" ? bgTheme : undefined,
     reasons: reasons.length > 0 ? reasons : undefined,
@@ -714,6 +712,26 @@ export function CreateInviteForm({
             }))
         : undefined,
   };
+
+  if (result)
+    return (
+      <PaywallScreen
+        slug={result.slug}
+        recipientName={recipientName}
+        senderName={senderName || undefined}
+        template={template}
+        headline={headline}
+        message={message}
+        heroImageUrl={heroImageUrl || undefined}
+        photoCaption={photoCaption || undefined}
+        stickerPack={stickerPack}
+        playfulNo={playfulNo}
+        dateOptions={dateOptions}
+        extras={previewExtras}
+        accentFrom={t.from}
+        accentTo={t.to}
+      />
+    );
 
   // Slide variants
   const variants = {
