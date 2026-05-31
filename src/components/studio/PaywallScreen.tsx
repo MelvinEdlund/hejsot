@@ -142,7 +142,10 @@ function ProgressDots({
       {Array.from({ length: total }, (_, i) => (
         <motion.span
           key={i}
-          animate={{ width: i === current ? 24 : 6, opacity: i <= current ? 1 : 0.3 }}
+          animate={{
+            width: i === current ? 24 : 6,
+            opacity: i <= current ? 1 : 0.3,
+          }}
           transition={{ duration: 0.35, ease }}
           className="h-1.5 rounded-full"
           style={{
@@ -340,7 +343,6 @@ export function PaywallScreen({
 
       {/* ── Stage-innehåll ───────────────────────────────────────── */}
       <AnimatePresence mode="wait" custom={stageDir}>
-
         {/* ══ HOOK (sealed) ══════════════════════════════════════════ */}
         {stage === "hook" && (
           <motion.div
@@ -371,11 +373,7 @@ export function PaywallScreen({
                 transition={{ delay: 0.3, duration: 0.85, ease }}
                 className="mt-10"
               >
-                <Polaroid
-                  src={heroImageUrl}
-                  caption={photoCaption}
-                  tilt={-3}
-                />
+                <Polaroid src={heroImageUrl} caption={photoCaption} tilt={-3} />
               </motion.div>
             )}
 
@@ -387,7 +385,11 @@ export function PaywallScreen({
                 transition={{ delay: 0.38, duration: 0.65, ease }}
                 className="mt-8 flex justify-center"
               >
-                <GifCard src={sealedGif.url} caption={sealedGif.caption} tilt={3} />
+                <GifCard
+                  src={sealedGif.url}
+                  caption={sealedGif.caption}
+                  tilt={3}
+                />
               </motion.div>
             )}
 
@@ -423,7 +425,6 @@ export function PaywallScreen({
               öppna inbjudan
               <ArrowDown className="h-[16px] w-[16px] transition-transform group-hover:translate-y-[3px]" />
             </motion.button>
-
           </motion.div>
         )}
 
@@ -508,7 +509,11 @@ export function PaywallScreen({
                 transition={{ delay: 0.48, duration: 0.6, ease }}
                 className="mt-8 flex justify-center"
               >
-                <GifCard src={openGif.url} caption={openGif.caption} tilt={-2} />
+                <GifCard
+                  src={openGif.url}
+                  caption={openGif.caption}
+                  tilt={-2}
+                />
               </motion.div>
             )}
 
@@ -529,7 +534,11 @@ export function PaywallScreen({
                       key={i}
                       initial={{ opacity: 0, x: -12, filter: "blur(2px)" }}
                       animate={{ opacity: 1, x: 0, filter: "blur(0px)" }}
-                      transition={{ delay: 0.58 + i * 0.08, duration: 0.5, ease }}
+                      transition={{
+                        delay: 0.58 + i * 0.08,
+                        duration: 0.5,
+                        ease,
+                      }}
                       className="flex items-center gap-3 rounded-2xl border border-accent/15 bg-surface/50 px-4 py-3.5 backdrop-blur-sm"
                     >
                       <span
@@ -658,20 +667,11 @@ export function PaywallScreen({
                 >
                   <Lock className="h-3.5 w-3.5 text-muted/70" />
                   <span className="text-[13px] text-muted">
-                    lås upp för att {firstName.toLowerCase()} ska kunna svara
+                    lås upp och få en egen, privat sida att dela med {firstName}
                   </span>
                 </motion.div>
               </div>
             </motion.div>
-
-            <motion.p
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 1.05 }}
-              className="mt-3 text-center text-[12px] italic text-muted/50"
-            >
-              eller skriv ett eget svar
-            </motion.p>
           </motion.div>
         )}
 
@@ -742,9 +742,13 @@ export function PaywallScreen({
                   />
                 </div>
                 <div className="min-w-0 flex-1">
-                  <div className="text-[11px] text-muted/60">din unika länk</div>
-                  <div className="truncate select-none text-[13px] font-medium text-fg/80"
-                    style={{ filter: "blur(3.5px)" }}>
+                  <div className="text-[11px] text-muted/60">
+                    din unika länk
+                  </div>
+                  <div
+                    className="truncate select-none text-[13px] font-medium text-fg/80"
+                    style={{ filter: "blur(3.5px)" }}
+                  >
                     hejsot.lol/i/{slug}
                   </div>
                 </div>
@@ -814,7 +818,11 @@ export function PaywallScreen({
                   }}
                 >
                   {angerrattConfirmed && (
-                    <svg viewBox="0 0 12 12" fill="none" className="h-full w-full p-0.5">
+                    <svg
+                      viewBox="0 0 12 12"
+                      fill="none"
+                      className="h-full w-full p-0.5"
+                    >
                       <path
                         d="M2 6l3 3 5-5"
                         stroke="#0d0c11"
@@ -827,7 +835,8 @@ export function PaywallScreen({
                 </div>
               </div>
               <p className="text-[12px] leading-relaxed text-muted/80">
-                Jag förstår att tjänsten påbörjas omedelbart efter betalning och att{" "}
+                Jag förstår att tjänsten påbörjas omedelbart efter betalning och
+                att{" "}
                 <strong className="font-medium text-fg/90">
                   ångerrätten därmed förfaller
                 </strong>{" "}
@@ -853,7 +862,9 @@ export function PaywallScreen({
               onClick={handleUnlock}
               disabled={loading || !angerrattConfirmed}
               whileHover={
-                loading || !angerrattConfirmed ? undefined : { y: -2, scale: 1.01 }
+                loading || !angerrattConfirmed
+                  ? undefined
+                  : { y: -2, scale: 1.01 }
               }
               whileTap={{ scale: 0.98 }}
               className={cn(
@@ -876,9 +887,24 @@ export function PaywallScreen({
                     exit={{ opacity: 0 }}
                     className="flex items-center justify-center gap-2"
                   >
-                    <svg className="h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.4 0 0 5.4 0 12h4z" />
+                    <svg
+                      className="h-4 w-4 animate-spin"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      />
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.4 0 0 5.4 0 12h4z"
+                      />
                     </svg>
                     skickar dig till betalning…
                   </motion.span>
@@ -926,7 +952,8 @@ export function PaywallScreen({
                 </span>
               </div>
               <p className="mt-3 text-center text-[11px] leading-relaxed text-muted/45">
-                efter betalning får du länken direkt. vi lagrar inga kortuppgifter.
+                efter betalning får du länken direkt. vi lagrar inga
+                kortuppgifter.
               </p>
             </motion.div>
 
