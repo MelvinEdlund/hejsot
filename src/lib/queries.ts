@@ -20,7 +20,7 @@ import {
  */
 
 const INVITE_COLUMNS =
-  "id, slug, user_id, recipient_name, sender_name, template, headline, message, hero_image_url, ask_timing, playful_no, date_options, sticker_pack, photo_caption, secret_note, extras, status, notify_email, expires_at, created_at, opened_at, open_count";
+  "id, slug, user_id, recipient_name, sender_name, template, headline, message, hero_image_url, ask_timing, playful_no, date_options, sticker_pack, photo_caption, secret_note, extras, status, notify_email, expires_at, is_unlocked, stripe_session_id, created_at, opened_at, open_count";
 
 function isExpired(row: Pick<InvitationRow, "expires_at">): boolean {
   return !!row.expires_at && new Date(row.expires_at).getTime() < Date.now();
@@ -51,6 +51,8 @@ export async function getPublicInvitation(
     await deleteInvitation(row.id);
     return null;
   }
+  // Paywall: only serve the real invite to unlocked invitations
+  if (!row.is_unlocked) return null;
   return toPublicInvitation(rowToInvitation(row));
 }
 
@@ -267,4 +269,38 @@ export async function listUserInvitations(
     ...rowToInvitation(row),
     responseCount: row.responses?.[0]?.count ?? 0,
   }));
+}
+
+// ── Paywall helpers ──────────────────────────────────────────────
+
+/** Mark an invitation as paid/unlocked by slug. */
+export async function unlockInvitationBySlug(slug: string): Promise<boolean> {
+  const { error } = await supabaseAdmin()
+    .from("invitations")
+    .update({ is_unlocked: true })
+    .eq("slug", slug);
+  return !error;
+}
+
+/** Mark an invitation as paid/unlocked by Stripe session id. */
+export async function unlockInvitationBySession(
+  stripeSessionId: string,
+  slug: string,
+): Promise<boolean> {
+  const { error } = await supabaseAdmin()
+    .from("invitations")
+    .update({ is_unlocked: true, stripe_session_id: stripeSessionId })
+    .eq("slug", slug);
+  return !error;
+}
+
+/** Check whether an invitation is unlocked (paid). */
+export async function isInvitationUnlocked(slug: string): Promise<boolean> {
+  const { data, error } = await supabaseAdmin()
+    .from("invitations")
+    .select("is_unlocked")
+    .eq("slug", slug)
+    .maybeSingle();
+  if (error || !data) return false;
+  return Boolean((data as { is_unlocked: boolean }).is_unlocked);
 }
