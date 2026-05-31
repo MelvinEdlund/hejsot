@@ -327,7 +327,7 @@ export function PaywallScreen({
           />
           <span className="font-display text-[12px] italic text-muted">
             {stage === "hook"
-              ? `du ser vad ${firstName} kommer se`
+              ? "förhandsgranskning — klicka dig igenom"
               : stage === "open"
                 ? "förhandsgranskning — klicka dig igenom"
                 : "allt klart — lås upp och skicka"}
