@@ -274,6 +274,15 @@ export async function listUserInvitations(
 // ── Paywall helpers ──────────────────────────────────────────────
 
 /** Mark an invitation as paid/unlocked by slug. */
+/** Admin: manually unlock an invitation by its UUID (no payment required). */
+export async function unlockInvitationById(id: string): Promise<boolean> {
+  const { error } = await supabaseAdmin()
+    .from("invitations")
+    .update({ is_unlocked: true })
+    .eq("id", id);
+  return !error;
+}
+
 export async function unlockInvitationBySlug(slug: string): Promise<boolean> {
   const { error } = await supabaseAdmin()
     .from("invitations")

@@ -10,6 +10,7 @@ import {
   setInvitationStatus,
   deleteInvitation,
   getInvitationDetail,
+  unlockInvitationById,
 } from "@/lib/queries";
 import { makeSlug } from "@/lib/slug";
 import { inviteUrl, clientIp } from "@/lib/utils";
@@ -129,6 +130,12 @@ export async function updateInvitation(input: unknown): Promise<ActionResult> {
     const ok = await deleteInvitation(id);
     if (ok) revalidatePath("/studio");
     return { ok, error: ok ? undefined : "Kunde inte ta bort." };
+  }
+
+  if (action === "unlock") {
+    const ok = await unlockInvitationById(id);
+    if (ok) revalidatePath("/studio/admin");
+    return { ok, error: ok ? undefined : "Kunde inte låsa upp." };
   }
 
   const detail = await getInvitationDetail(id);

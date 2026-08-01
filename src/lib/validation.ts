@@ -80,5 +80,5 @@ export const loginSchema = z.object({
 
 export const updateInviteSchema = z.object({
   id: z.string().uuid(),
-  action: z.enum(["archive", "activate", "delete", "resend"]),
+  action: z.enum(["archive", "activate", "delete", "resend", "unlock"]),
 });

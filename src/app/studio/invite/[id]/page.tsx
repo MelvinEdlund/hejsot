@@ -81,6 +81,7 @@ export default async function InviteDetailPage({ params }: { params: Promise<{ i
               id={i.id}
               url={url}
               status={i.status}
+              isUnlocked={i.isUnlocked}
               canResend={responses.length > 0 && !!i.notifyEmail}
             />
           </div>
